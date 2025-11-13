@@ -40,6 +40,7 @@ def main():
 
     try:
         tx = w3.eth.get_transaction(tx_hash)
+        print(f"🔧 Method ID: {tx.input[:10]}")
         if tx and tx.blockNumber is None:
             print("⏳ Transaction is still pending and not yet mined.")
             sys.exit(0)
