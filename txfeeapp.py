@@ -53,6 +53,7 @@ def main():
     block = w3.eth.get_block(block_number)
     status = rcpt.status
     gas_used = rcpt.gasUsed
+    print(f"📊 Gas Limit vs Used: {tx['gas']} limit / {gas_used} used")
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
     confirmations = w3.eth.block_number - block_number
