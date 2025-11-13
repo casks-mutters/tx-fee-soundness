@@ -40,6 +40,7 @@ def main():
 
     try:
         tx = w3.eth.get_transaction(tx_hash)
+        print(f"🚀 Type: {'EIP-1559' if tx.type == 2 else 'Legacy'}")
         if tx and tx.blockNumber is None:
             print("⏳ Transaction is still pending and not yet mined.")
             sys.exit(0)
