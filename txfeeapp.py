@@ -67,6 +67,8 @@ def main():
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
+    if confirmations < 5:
+    print("⚠️  Low confirmations — possible reorg risk.")
     print(f"⏱️  Elapsed: {time.time() - start_time:.2f}s")
 
 if __name__ == "__main__":
