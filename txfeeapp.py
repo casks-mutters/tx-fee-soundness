@@ -54,6 +54,8 @@ def main():
     status = rcpt.status
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
+    print(f"🔥 Base Fee (block): {Web3.from_wei(block.baseFeePerGas, 'gwei'):.2f} Gwei")
+    print(f"🎁 Priority Tip: {Web3.from_wei(gas_price - block.baseFeePerGas, 'gwei'):.2f} Gwei")
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
     confirmations = w3.eth.block_number - block_number
 
