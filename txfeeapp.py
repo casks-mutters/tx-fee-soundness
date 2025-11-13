@@ -44,6 +44,9 @@ def main():
             print("⏳ Transaction is still pending and not yet mined.")
             sys.exit(0)
         rcpt = w3.eth.get_transaction_receipt(tx_hash)
+        if rcpt is None:
+    print("❌ Transaction receipt not available yet.")
+    sys.exit(0)
     except Exception as e:
         print(f"❌ Error fetching transaction: {e}")
         sys.exit(2)
