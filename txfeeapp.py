@@ -65,6 +65,7 @@ def main():
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
     print(f"⛽ Gas Used: {gas_used}")
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
+    print(f"📉 Cost per gas: {wei_to_eth(gas_price):.12f} ETH/gas")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
     print(f"⏱️  Elapsed: {time.time() - start_time:.2f}s")
