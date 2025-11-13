@@ -31,6 +31,7 @@ def main():
         sys.exit(1)
 
     w3 = Web3(Web3.HTTPProvider(RPC_URL))
+    w3.provider.make_request("web3_clientVersion", [])
     if not w3.is_connected():
         print("❌ Failed to connect to RPC endpoint.")
         sys.exit(1)
