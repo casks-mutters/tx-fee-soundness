@@ -58,6 +58,7 @@ def main():
     confirmations = w3.eth.block_number - block_number
 
     print(f"🔗 Tx Hash: {tx_hash}")
+    print(f"🔢 Nonce: {tx['nonce']}")
     print(f"👤 From: {tx['from']}")
     print(f"🎯 To: {tx['to']}")
     print(f"🔢 Block: {block_number}")
