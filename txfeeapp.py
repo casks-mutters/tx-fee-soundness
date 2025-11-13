@@ -62,6 +62,8 @@ def main():
     print(f"🎯 To: {tx['to']}")
     print(f"🔢 Block: {block_number}")
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
+    if block.timestamp > time.time() + 120:
+    print("⚠️  Warning: RPC returned a future timestamp.")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
     print(f"⛽ Gas Used: {gas_used}")
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
