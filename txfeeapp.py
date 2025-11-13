@@ -60,6 +60,8 @@ def main():
     print(f"🔗 Tx Hash: {tx_hash}")
     print(f"👤 From: {tx['from']}")
     print(f"🎯 To: {tx['to']}")
+    if tx['to'] is None:
+    print("🏗️ This transaction deployed a smart contract.")
     print(f"🔢 Block: {block_number}")
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
