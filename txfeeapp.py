@@ -51,6 +51,7 @@ def main():
     # Extract info
     block_number = rcpt.blockNumber
     block = w3.eth.get_block(block_number)
+    print(f"📊 Block Gas Used: {(block.gasUsed / block.gasLimit) * 100:.2f}%")
     status = rcpt.status
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
