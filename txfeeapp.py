@@ -55,6 +55,8 @@ def main():
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
+    if tx['value'] > 0:
+    print(f"💹 Fee/Value Ratio: { (total_fee_eth / wei_to_eth(tx['value'])) * 100:.4f}%")
     confirmations = w3.eth.block_number - block_number
 
     print(f"🔗 Tx Hash: {tx_hash}")
