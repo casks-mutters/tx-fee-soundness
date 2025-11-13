@@ -52,6 +52,8 @@ def main():
     block_number = rcpt.blockNumber
     block = w3.eth.get_block(block_number)
     status = rcpt.status
+    if rcpt.contractAddress:
+    print(f"🏗️ Contract Created: {rcpt.contractAddress}")
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
