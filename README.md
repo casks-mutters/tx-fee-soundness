@@ -18,19 +18,22 @@ It provides a minimal but clear way to inspect a transaction’s **economic foot
 2. Install dependency:
    ```bash
    pip install web3
+
 ## Example Output
-🌐 Connected to Ethereum Mainnet (chainId 1)
-🔗 Tx Hash: 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-👤 From: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
-🎯 To: 0x00000000219ab540356cBB839Cbe05303d7705Fa
-🔢 Block: 18945023
-🕒 Block Time: 2025-11-09 15:41:32 UTC
-📦 Status: ✅ Success
+
+Connected to Ethereum Mainnet (chainId 1)
+Tx Hash: 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+From:    0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+To:      0x00000000219ab540356cBB839Cbe05303d7705Fa
+Block:   18945023
+Block Time: 2025-11-09 15:41:32 UTC
+Status:  ✅ Success
 ⛽ Gas Used: 64231
 ⛽ Gas Price: 24.31 Gwei
 💰 Total Fee: 0.001562 ETH
 ✅ Confirmations: 8
-⏱️  Elapsed: 2.45s
+⏱️ Elapsed: 2.45s
+
 
 ## Notes
 
