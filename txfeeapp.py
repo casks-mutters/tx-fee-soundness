@@ -6,16 +6,17 @@ from web3 import Web3
 
 # Default RPC configuration
 RPC_URL = os.getenv("RPC_URL", "https://mainnet.infura.io/v3/your_api_key")
+NETWORKS = {
+    1: "Ethereum Mainnet",
+    11155111: "Sepolia Testnet",
+    137: "Polygon",
+    10: "Optimism",
+    42161: "Arbitrum One",
+}
 
 def get_network_name(chain_id: int) -> str:
-    networks = {
-        1: "Ethereum Mainnet",
-        11155111: "Sepolia Testnet",
-        137: "Polygon",
-        10: "Optimism",
-        42161: "Arbitrum One",
-    }
-    return networks.get(chain_id, f"Unknown (chain ID {chain_id})")
+    return NETWORKS.get(chain_id, f"Unknown (chain ID {chain_id})")
+
 
 def wei_to_eth(value: int) -> float:
     return Web3.from_wei(value, "ether")
