@@ -28,8 +28,10 @@ def fmt_ts(ts: Optional[int]) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="Batch-check transaction fee soundness for multiple tx hashes."
+        description="Batch-check transaction fee soundness for multiple tx hashes.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+
     p.add_argument(
         "--rpc",
         required=True,
