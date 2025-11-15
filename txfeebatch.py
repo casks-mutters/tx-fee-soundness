@@ -30,6 +30,13 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Batch-check transaction fee soundness for multiple tx hashes."
     )
+        p.add_argument(
+        "--min-confirmations",
+        type=int,
+        default=0,
+        help="Minimum confirmation count required per transaction.",
+    )
+
     p.add_argument(
         "--rpc",
         required=True,
@@ -212,6 +219,13 @@ def main() -> int:
             confirmations = max(0, latest_block - block_number + 1)
         else:
             confirmations = None
+        if confirmations is not None and confirmations < args.min_confirmations:
+            any_error = True
+            print(
+                f"{warn_emoji}Confirmations {confirmations} below minimum "
+                f"{args.min_confirmations} for tx {tx_hash}",
+                file=sys.stderr,
+            )
 
         fee_eth_str = fmt_eth(total_fee_wei)
         gas_price_gwei_str = fmt_gwei(gas_price_wei)
