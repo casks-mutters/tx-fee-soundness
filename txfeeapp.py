@@ -53,6 +53,8 @@ def main():
     block = w3.eth.get_block(block_number)
     status = rcpt.status
     gas_used = rcpt.gasUsed
+        gas_limit = tx["gas"]
+    gas_eff_pct = (gas_used / gas_limit * 100) if gas_limit else 0.0
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
     confirmations = w3.eth.block_number - block_number
@@ -63,7 +65,7 @@ def main():
     print(f"🔢 Block: {block_number}")
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
-    print(f"⛽ Gas Used: {gas_used}")
+        print(f"⛽ Gas Used: {gas_used} / {gas_limit} ({gas_eff_pct:.2f}%)")
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
