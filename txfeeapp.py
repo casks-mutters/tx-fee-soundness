@@ -36,6 +36,7 @@ def main():
         sys.exit(1)
 
     print(f"🌐 Connected to {get_network_name(w3.eth.chain_id)} (chainId {w3.eth.chain_id})")
+        print(f"🧱 Current head block: {w3.eth.block_number}")
     start_time = time.time()
 
     try:
