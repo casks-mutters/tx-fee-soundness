@@ -63,6 +63,8 @@ def main():
     print(f"🔢 Block: {block_number}")
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
+        if status != 1:
+        print("⚠️  Transaction failed, but gas fees were still paid.")
     print(f"⛽ Gas Used: {gas_used}")
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
