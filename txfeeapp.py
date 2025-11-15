@@ -64,7 +64,11 @@ def main():
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
     print(f"⛽ Gas Used: {gas_used}")
-    print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
+       if gas_price:
+        print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
+    else:
+        print("⛽ Gas Price: n/a")
+
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
     print(f"⏱️  Elapsed: {time.time() - start_time:.2f}s")
