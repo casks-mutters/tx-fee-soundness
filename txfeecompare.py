@@ -8,6 +8,15 @@ from typing import Optional, List, Dict, Any
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
 
+# Near the top of txfeeapp.py
+CHAIN_NAMES = {
+    1: "Ethereum Mainnet",
+    5: "Goerli",
+    11155111: "Sepolia",
+    137: "Polygon",
+    10: "Optimism",
+    8453: "Base",
+}
 
 @dataclass
 class EndpointResult:
@@ -376,6 +385,11 @@ def main() -> int:
     notes = summarize_inconsistencies(results)
     has_warning = any(n.startswith("⚠️") for n in notes)
     return 1 if has_warning else 0
+    network_name = CHAIN_NAMES.get(chain_id, "Unknown network")
+    print(
+        f"Connected to RPC: {args.rpc}"
+        + (f" (chainId {chain_id}, {network_name})" if chain_id is not None else "")
+    )
 
 
 if __name__ == "__main__":
