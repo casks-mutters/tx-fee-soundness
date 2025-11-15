@@ -281,9 +281,13 @@ def main() -> int:
     # Human-readable
     print(f"Tx: {tx_hash}")
     print(f"Primary RPC  : {args.rpc1}")
+    print(f"  → Network  : {network_name(v1.chain_id)}")
     if args.rpc2:
         print(f"Secondary RPC: {args.rpc2}")
+        if v2 is not None:
+            print(f"  → Network  : {network_name(v2.chain_id)}")
     print()
+
 
     def print_view(label: str, v: TxView) -> None:
         if not v.ok:
