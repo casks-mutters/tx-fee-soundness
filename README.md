@@ -18,6 +18,17 @@ It provides a minimal but clear way to inspect a transaction’s **economic foot
 2. Install dependency:
    ```bash
    pip install web3
+   
+## Usage
+
+Run the script with a transaction hash and an RPC URL:
+
+```bash
+python txfeeapp.py \
+  0xYOUR_TX_HASH_HERE \
+  --rpc https://mainnet.infura.io/v3/YOUR_KEY
+'''
+
 ## Example Output
 🌐 Connected to Ethereum Mainnet (chainId 1)
 🔗 Tx Hash: 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
