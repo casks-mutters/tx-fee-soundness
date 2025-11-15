@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
-
+from typing import Union
 
 @dataclass
 class EndpointResult:
@@ -33,22 +33,18 @@ class EndpointResult:
     confirmations: Optional[int]
 
 
-def fmt_eth(wei: Optional[int]) -> str:
-    if wei is None:
-        return "-"
+
+def fmt_eth(wei: int) -> str:
     return f"{Web3.from_wei(wei, 'ether'):.6f}"
 
 
-def fmt_gwei(wei: Optional[int]) -> str:
-    if wei is None:
-        return "-"
+def fmt_gwei(wei: int) -> str:
     return f"{Web3.from_wei(wei, 'gwei'):.2f}"
 
 
-def fmt_ts(ts: Optional[int]) -> str:
-    if ts is None:
-        return "-"
-    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+def fmt_ts(ts: int) -> str:
+    # Block timestamp is seconds since epoch (UTC)
+    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 
 def build_parser() -> argparse.ArgumentParser:
