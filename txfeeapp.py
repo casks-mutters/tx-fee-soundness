@@ -30,10 +30,17 @@ def main():
         print("❌ Invalid transaction hash format.")
         sys.exit(1)
 
-    w3 = Web3(Web3.HTTPProvider(RPC_URL))
+    w3 = Web3(Web3.HTTPProvider(RPC_URL, request_kwargs={"timeout": 20}))
     if not w3.is_connected():
         print("❌ Failed to connect to RPC endpoint.")
         sys.exit(1)
+
+    # Optional PoA middleware for some L2 / test networks
+    try:
+        from web3.middleware import geth_poa_middleware
+        w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+    except Exception:
+        pass
 
     print(f"🌐 Connected to {get_network_name(w3.eth.chain_id)} (chainId {w3.eth.chain_id})")
     start_time = time.time()
