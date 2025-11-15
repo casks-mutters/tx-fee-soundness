@@ -38,14 +38,24 @@ def main():
     print(f"🌐 Connected to {get_network_name(w3.eth.chain_id)} (chainId {w3.eth.chain_id})")
     start_time = time.time()
 
-    try:
+      try:
         tx = w3.eth.get_transaction(tx_hash)
-        if tx and tx.blockNumber is None:
-            print("⏳ Transaction is still pending and not yet mined.")
-            sys.exit(0)
-        rcpt = w3.eth.get_transaction_receipt(tx_hash)
     except Exception as e:
         print(f"❌ Error fetching transaction: {e}")
+        sys.exit(2)
+
+    if tx is None:
+        print("❌ Transaction not found on this RPC/network.")
+        sys.exit(2)
+
+    if tx.blockNumber is None:
+        print("⏳ Transaction is still pending and not yet mined.")
+        sys.exit(0)
+
+    try:
+        rcpt = w3.eth.get_transaction_receipt(tx_hash)
+    except Exception as e:
+        print(f"❌ Error fetching transaction receipt: {e}")
         sys.exit(2)
 
     # Extract info
