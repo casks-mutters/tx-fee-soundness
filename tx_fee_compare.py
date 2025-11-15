@@ -267,14 +267,22 @@ def main() -> int:
 
     elapsed = round(time.monotonic() - start, 3)
 
-    if args.json:
+       if args.json:
         out: Dict[str, Any] = {
             "txHash": tx_hash,
-            "primary": asdict(v1),
-            "secondary": asdict(v2) if v2 is not None else None,
+            "primary": {
+                **asdict(v1),
+                "networkName": network_name(v1.chain_id),
+            },
+            "secondary": (
+                {**asdict(v2), "networkName": network_name(v2.chain_id)}
+                if v2 is not None
+                else None
+            ),
             "comparison": compare_views(v1, v2) if v1.ok and v2 and v2.ok else None,
             "timingSec": elapsed,
         }
+
         print(json.dumps(out, indent=2, sort_keys=True))
         return 0 if (v1.ok and (v2 is None or v2.ok)) else 1
 
