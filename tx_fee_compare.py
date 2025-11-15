@@ -225,6 +225,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     return p
 
+def short(url: str, keep: int = 25) -> str:
+    return url if len(url) <= keep else url[:keep] + "…"
 
 def main() -> int:
     parser = build_parser()
@@ -280,7 +282,7 @@ def main() -> int:
 
     # Human-readable
     print(f"Tx: {tx_hash}")
-    print(f"Primary RPC  : {args.rpc1}")
+  print(f"Primary RPC  : {short(args.rpc1)}")
     if args.rpc2:
         print(f"Secondary RPC: {args.rpc2}")
     print()
