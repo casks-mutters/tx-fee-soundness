@@ -7,6 +7,15 @@ from typing import List, Optional
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
 
+CHAIN_NAMES = {
+    1: "Ethereum Mainnet",
+    5: "Goerli",
+    11155111: "Sepolia",
+    10: "Optimism",
+    42161: "Arbitrum One",
+    8453: "Base",
+    137: "Polygon",
+}
 
 def fmt_eth(wei: Optional[int]) -> str:
     if wei is None:
@@ -142,11 +151,13 @@ def main() -> int:
     except Exception:
         chain_id = None
 
-    # Basic intro line
+      # Basic intro line
     if chain_id is not None:
-        print(f"Connected to RPC {args.rpc} (chainId {chain_id})")
+        network_name = CHAIN_NAMES.get(chain_id, "Unknown network")
+        print(f"Connected to RPC {args.rpc} (chainId {chain_id}, {network_name})")
     else:
         print(f"Connected to RPC {args.rpc}")
+
 
     # Fetch latest block once for confirmation estimates; may be slightly stale but OK for batch
     try:
