@@ -108,7 +108,8 @@ def check_endpoint(
     tx_hash_hex = Web3.to_hex(tx_hash)
 
     try:
-        tx = w3.eth.get_transaction(tx_hash_hex)
+       tx_type = tx.get("type", "0x0")
+    print(f"Tx Type: {tx_type}")
         tx_found = True
     except TransactionNotFound:
         return EndpointResult(
@@ -359,6 +360,8 @@ def main() -> int:
 
     tx_hash = args.tx_hash
     timeout = args.timeout
+   
+    print(f"Tx Type: {tx_type}")
 
     start = time.time()
 
