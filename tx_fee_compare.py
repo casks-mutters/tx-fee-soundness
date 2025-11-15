@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
 
-
+__version__ = "0.1.0"
 DEFAULT_RPC1 = os.getenv("RPC_URL")
 DEFAULT_RPC2 = os.getenv("RPC_URL_2")
 
@@ -197,6 +197,13 @@ def build_parser() -> argparse.ArgumentParser:
         "tx_hash",
         help="Transaction hash (0x-prefixed, 32 bytes).",
     )
+        p.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show program version and exit.",
+    )
+
     p.add_argument(
         "--rpc1",
         default=DEFAULT_RPC1,
