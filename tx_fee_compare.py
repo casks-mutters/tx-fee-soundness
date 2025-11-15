@@ -192,7 +192,14 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Compare fee-related transaction fields across two RPC endpoints.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=(
+            "Example:\n"
+            "  RPC_URL=https://mainnet.infura.io/v3/<KEY> \\\n"
+            "  RPC_URL_2=https://eth-mainnet.g.alchemy.com/v2/<KEY> \\\n"
+            "  python tx_fee_compare.py 0x...\n"
+        ),
     )
+
     p.add_argument(
         "tx_hash",
         help="Transaction hash (0x-prefixed, 32 bytes).",
