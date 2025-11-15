@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+Batch-check transaction fee soundness for multiple tx hashes on a single RPC.
+"""
 import argparse
 import sys
 import time
