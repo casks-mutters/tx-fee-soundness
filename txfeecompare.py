@@ -131,9 +131,14 @@ def check_endpoint(
         )
 
     # Try to get receipt
-    try:
-        receipt = w3.eth.get_transaction_receipt(tx_hash_hex)
+     try:
+        receipt = w3.eth.get_transaction_receipt(tx_hash)
     except TransactionNotFound:
+        print(f"⏳ Transaction pending: {tx_hash}")
+        print(f"From: {tx['from']}")
+        print(f"To:   {tx['to']}")
+        return 0
+
         # Present in mempool, but no receipt yet
         return EndpointResult(
             label=label,
