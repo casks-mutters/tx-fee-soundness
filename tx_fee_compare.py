@@ -310,8 +310,13 @@ def main() -> int:
     elif v2 is None:
         print(f"\n{warn_icon} Only primary RPC was available; no cross-check performed.")
 
-    print(f"\nElapsed: {elapsed}s")
+      if elapsed < 1:
+        elapsed_str = f"{elapsed * 1000:.0f}ms"
+    else:
+        elapsed_str = f"{elapsed:.3f}s"
+    print(f"\nElapsed: {elapsed_str}")
     return 0 if v1.ok else 1
+
 
 
 if __name__ == "__main__":
