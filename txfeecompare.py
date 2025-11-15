@@ -71,6 +71,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=10,
         help="RPC request timeout in seconds (default: 10)",
     )
+        p.add_argument(
+        "--min-confirmations",
+        type=int,
+        default=0,
+        help="Minimum confirmation count required (default: 0)",
+    )
+
     return p
 
 
@@ -191,7 +198,15 @@ def check_endpoint(
         gas_used * gas_price_wei if gas_used is not None and gas_price_wei is not None else None
     )
 
-    confirmations = max(0, latest_block - block_number + 1)
+       confirmations = max(0, latest_block - block_number + 1)
+
+    if confirmations < args.min_confirmations:
+        print(
+            f"⚠️ Confirmations ({confirmations}) are below required minimum "
+            f"({args.min_confirmations}).",
+            file=sys.stderr,
+        )
+
 
     return EndpointResult(
         label=label,
