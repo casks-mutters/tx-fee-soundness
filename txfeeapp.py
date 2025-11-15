@@ -19,6 +19,13 @@ def get_network_name(chain_id: int) -> str:
 
 def wei_to_eth(value: int) -> float:
     return Web3.from_wei(value, "ether")
+    
+def short_addr(addr: str) -> str:
+    if not addr:
+        return "None"
+    if len(addr) <= 12:
+        return addr
+    return f"{addr[:6]}…{addr[-4:]}"
 
 def main():
     if len(sys.argv) != 2:
@@ -58,8 +65,8 @@ def main():
     confirmations = w3.eth.block_number - block_number
 
     print(f"🔗 Tx Hash: {tx_hash}")
-    print(f"👤 From: {tx['from']}")
-    print(f"🎯 To: {tx['to']}")
+    print(f"👤 From: {short_addr(tx['from'])}")
+    print(f"🎯 To: {short_addr(tx['to'])}")
     print(f"🔢 Block: {block_number}")
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
