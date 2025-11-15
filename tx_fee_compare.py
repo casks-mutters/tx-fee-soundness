@@ -12,6 +12,22 @@ from web3.exceptions import TransactionNotFound
 
 DEFAULT_RPC1 = os.getenv("RPC_URL")
 DEFAULT_RPC2 = os.getenv("RPC_URL_2")
+NETWORKS = {
+    1: "Ethereum Mainnet",
+    11155111: "Sepolia Testnet",
+    10: "Optimism",
+    137: "Polygon",
+    42161: "Arbitrum One",
+    8453: "Base",
+    59144: "Linea",
+    324: "zkSync Era",
+}
+
+
+def network_name(chain_id: Optional[int]) -> str:
+    if chain_id is None:
+        return "Unknown"
+    return NETWORKS.get(chain_id, f"Unknown (chainId {chain_id})")
 
 
 @dataclass
