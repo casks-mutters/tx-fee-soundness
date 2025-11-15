@@ -235,8 +235,9 @@ def main() -> int:
 
     try:
         tx_hash = normalize_hash(args.tx_hash)
-    except ValueError as exc:
+      except ValueError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
+        print("Hint: ensure the hash is 0x-prefixed and 64 hex characters.", file=sys.stderr)
         return 1
 
     use_emoji = not args.no_emoji
