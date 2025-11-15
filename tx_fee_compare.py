@@ -229,6 +229,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+if args.rpc2 and args.rpc1 == args.rpc2:
+    print("⚠️  Warning: rpc1 and rpc2 are identical; comparison may be pointless.", file=sys.stderr)
 
     if not args.rpc1:
         parser.error("Primary RPC is required (use --rpc1 or set RPC_URL).")
