@@ -54,6 +54,12 @@ def main():
     status = rcpt.status
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
+        base_fee_wei = block.get("baseFeePerGas")
+    tip_gwei = None
+    if base_fee_wei is not None and gas_price:
+        base_fee_gwei = Web3.from_wei(base_fee_wei, "gwei")
+        eff_gwei = Web3.from_wei(gas_price, "gwei")
+        tip_gwei = eff_gwei - base_fee_gwei
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
     confirmations = w3.eth.block_number - block_number
 
@@ -68,6 +74,12 @@ def main():
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
     print(f"⏱️  Elapsed: {time.time() - start_time:.2f}s")
+    if gas_price:
+        print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
+    else:
+        print("⛽ Gas Price: n/a")
+    if base_fee_wei is not None and gas_price:
+        print(f"⛽ Base Fee: {base_fee_gwei:.2f} Gwei, Tip: {tip_gwei:.2f} Gwei")
 
 if __name__ == "__main__":
     main()
