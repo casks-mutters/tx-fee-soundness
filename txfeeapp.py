@@ -50,7 +50,11 @@ def main():
 
     # Extract info
     block_number = rcpt.blockNumber
-    block = w3.eth.get_block(block_number)
+       try:
+        block = w3.eth.get_block(block_number)
+    except Exception as e:
+        print(f"❌ Error fetching block {block_number}: {e}")
+        sys.exit(2)
     status = rcpt.status
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
