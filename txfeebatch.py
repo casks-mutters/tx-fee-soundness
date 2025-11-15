@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
-
+VERSION = "0.1.0"
 
 def fmt_eth(wei: Optional[int]) -> str:
     if wei is None:
@@ -30,6 +30,12 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Batch-check transaction fee soundness for multiple tx hashes."
     )
+        p.add_argument(
+        "--version",
+        action="store_true",
+        help="Print version and exit",
+    )
+
     p.add_argument(
         "--rpc",
         required=True,
@@ -112,6 +118,9 @@ def normalize_hash(tx_hash: str) -> Optional[str]:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    if args.version:
+        print(f"txfeebatch {VERSION}")
+        return 0
 
     start_time = time.time()
 
