@@ -286,9 +286,13 @@ def main() -> int:
     print()
 
     def print_view(label: str, v: TxView) -> None:
-        if not v.ok:
-            print(f"{label}: {err_icon} {v.error}")
-            return
+      if not v.ok:
+    if v.error == "pending":
+        print(f"{label}: ⏳ pending (no receipt yet)")
+    else:
+        print(f"{label}: {err_icon} {v.error}")
+    return
+
         print(f"{label}: {ok_icon} chainId={v.chain_id} block={v.block_number} status={v.status}")
         print(
             f"  gasUsed={v.gas_used}  gasPrice={fmt_gwei(v.gas_price_wei)} Gwei  "
