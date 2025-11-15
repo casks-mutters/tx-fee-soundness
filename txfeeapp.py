@@ -55,7 +55,9 @@ def main():
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
-    confirmations = w3.eth.block_number - block_number
+        confirmations = w3.eth.block_number - block_number
+    if confirmations < 0:
+        confirmations = 0
 
     print(f"🔗 Tx Hash: {tx_hash}")
     print(f"👤 From: {tx['from']}")
