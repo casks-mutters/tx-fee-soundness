@@ -211,6 +211,11 @@ def check_endpoint(
         total_fee_wei=total_fee_wei,
         confirmations=confirmations,
     )
+    p.add_argument(
+        "--short",
+        action="store_true",
+        help="Print a single-line summary instead of detailed output",
+    )
 
 
 def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
@@ -226,6 +231,13 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
             v = getattr(r, field)
             values.setdefault(v, []).append(r.label)
         return values
+    if args.short:
+        print(
+            f"{tx_hash} | status={'success' if receipt.status == 1 else 'failed'} | "
+            f"fee={fmt_eth(total_fee_wei)} ETH | "
+            f"block={block_number} | conf={confirmations}"
+        )
+        return 0
 
     # ChainId
     chains = collect("chain_id")
