@@ -39,3 +39,13 @@ If the transaction is still pending, the script will exit gracefully.
 Gas price may vary depending on EIP-1559 vs legacy type.
 The fee and confirmation count are live data points; they can change slightly as new blocks are mined.
 For cross-checking soundness across providers, rerun the script with a second RPC and compare output values.
+
+## Contributing
+
+Small improvements are welcome!
+
+- Open an issue or PR with a clear description
+- Keep pull requests small and focused
+- Add or update documentation when behavior changes
+
+This repo is intentionally minimal so it’s easy to read and extend.
