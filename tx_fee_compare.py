@@ -229,6 +229,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    print("🔍 tx-fee-soundness: starting comparison...\n")
 
     if not args.rpc1:
         parser.error("Primary RPC is required (use --rpc1 or set RPC_URL).")
