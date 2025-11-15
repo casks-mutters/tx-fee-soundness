@@ -25,10 +25,16 @@ def main():
         print("Usage: python app.py <tx_hash>")
         sys.exit(1)
 
-    tx_hash = sys.argv[1]
+       tx_hash = sys.argv[1]
     if not tx_hash.startswith("0x") or len(tx_hash) != 66:
-        print("❌ Invalid transaction hash format.")
+        print("❌ Invalid transaction hash format (must be 0x + 64 hex characters).")
         sys.exit(1)
+    try:
+        int(tx_hash[2:], 16)
+    except ValueError:
+        print("❌ Transaction hash must contain only hexadecimal characters.")
+        sys.exit(1)
+
 
     w3 = Web3(Web3.HTTPProvider(RPC_URL))
     if not w3.is_connected():
