@@ -1,7 +1,9 @@
 # app.py
+
 import os
 import sys
 import time
+import argparse
 from web3 import Web3
 
 # Default RPC configuration
@@ -19,13 +21,17 @@ def get_network_name(chain_id: int) -> str:
 
 def wei_to_eth(value: int) -> float:
     return Web3.from_wei(value, "ether")
-
+    
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Inspect a single Ethereum transaction by hash.")
+    p.add_argument("tx_hash", help="Transaction hash (0x-prefixed, 66 chars)")
+    p.add_argument("--json", action="store_true", help="Output JSON instead of plain text")
+    return p.parse_args()
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python app.py <tx_hash>")
-        sys.exit(1)
+    args = parse_args()
 
-    tx_hash = sys.argv[1]
+    tx_hash = args.tx_hash
+
     if not tx_hash.startswith("0x") or len(tx_hash) != 66:
         print("❌ Invalid transaction hash format.")
         sys.exit(1)
