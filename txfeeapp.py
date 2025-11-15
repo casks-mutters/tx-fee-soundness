@@ -22,7 +22,8 @@ def wei_to_eth(value: int) -> float:
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python app.py <tx_hash>")
+                print("Usage: python app.py <tx_hash>")
+        print("Example: RPC_URL=https://mainnet.infura.io/v3/<KEY> python app.py 0x1234...")
         sys.exit(1)
 
     tx_hash = sys.argv[1]
