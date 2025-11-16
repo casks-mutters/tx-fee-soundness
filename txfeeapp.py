@@ -36,7 +36,7 @@ def main():
         sys.exit(1)
 
     print(f"🌐 Connected to {get_network_name(w3.eth.chain_id)} (chainId {w3.eth.chain_id})")
-    start_time = time.time()
+        start_time = time.monotonic()
 
     try:
         tx = w3.eth.get_transaction(tx_hash)
@@ -67,7 +67,8 @@ def main():
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
-    print(f"⏱️  Elapsed: {time.time() - start_time:.2f}s")
+        print(f"⏱️  Elapsed: {time.monotonic() - start_time:.2f}s")
+
 
 if __name__ == "__main__":
     main()
