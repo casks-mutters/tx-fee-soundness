@@ -164,6 +164,11 @@ def main() -> int:
         print(f"Connected to RPC {args.rpc} (chainId {chain_id}, {network_name})")
     else:
         print(f"Connected to RPC {args.rpc}")
+    if args.max_fee_eth is not None:
+        print(
+            f"Max fee threshold enabled: {args.max_fee_eth:.6f} ETH "
+            "(transactions exceeding this will be flagged)."
+        )
 
 
     # Fetch latest block once for confirmation estimates; may be slightly stale but OK for batch
