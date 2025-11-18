@@ -169,8 +169,9 @@ def main() -> int:
     any_error = False
     any_fee_violation = False
 
-    print("\n# tx | status | block | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
-    print("# ------------------------------------------------------------------")
+        print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
+    print("# ------------------------------------------------------------------------------")
+
 
     for raw in hashes_raw:
         tx_hash = normalize_hash(raw)
@@ -207,6 +208,13 @@ def main() -> int:
         block_number = receipt.blockNumber
         status = receipt.status
         gas_used = receipt.gasUsed
+        block_time_str = "-"
+        if block_number is not None:
+            try:
+                block = w3.eth.get_block(block_number)
+                block_time_str = fmt_ts(block.timestamp)
+            except Exception:
+                block_time_str = "-"
 
         gas_price_wei = getattr(receipt, "effectiveGasPrice", None)
         if gas_price_wei is None:
@@ -230,10 +238,13 @@ def main() -> int:
         status_str = "success" if status == 1 else "failed"
         icon = ok_emoji if status == 1 else err_emoji
 
-        print(
+
+                   print(
             f"{icon}{tx_hash} | {status_str} | "
             f"{block_number if block_number is not None else '-'} | "
+            f"{block_time_str} | "
             f"{confirmations if confirmations is not None else '-'} | "
+
             f"{fee_eth_str} | "
             f"{gas_used if gas_used is not None else '-'} | "
             f"{gas_price_gwei_str}"
