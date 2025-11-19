@@ -16,7 +16,17 @@ It provides a minimal but clear way to inspect a transaction’s **economic foot
 ## Installation
 1. Install Python 3.10 or higher.
 2. Install dependency:
-   ```bash
+
+   ### CLI options
+
+Some useful flags:
+
+- `--rpc`: HTTP RPC endpoint (required)
+- `--timeout`: RPC request timeout in seconds (default: 10)
+- `--min-confirmations`: Require at least N confirmations
+- `--short`: Print a single-line summary
+- `--no-emoji`: Disable emoji in the output
+
    pip install web3
 
 ## Example Output
