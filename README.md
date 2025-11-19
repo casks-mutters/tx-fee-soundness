@@ -52,3 +52,11 @@ If the transaction is still pending, the script will exit gracefully.
 Gas price may vary depending on EIP-1559 vs legacy type.
 The fee and confirmation count are live data points; they can change slightly as new blocks are mined.
 For cross-checking soundness across providers, rerun the script with a second RPC and compare output values.
+
+### Exit codes
+
+- `0` – script ran successfully (even if the transaction failed on-chain)
+- `1` – an error occurred (invalid RPC, invalid tx hash, tx not found, etc.)
+
+You can use this in shell scripts or CI to fail builds when checks are not satisfied.
+
