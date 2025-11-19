@@ -80,9 +80,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def check_endpoint(
-    label: str, rpc_url: str, tx_hash: str, timeout: int
+    label: str,
+    rpc_url: str,
+    tx_hash: str,
+    timeout: int,
+    min_confirmations: int,
 ) -> EndpointResult:
-        try:
+
         w3 = Web3(Web3.HTTPProvider(args.rpc, request_kwargs={"timeout": args.timeout}))
     except Exception as exc:
         print(f"❌ Failed to create Web3 provider: {exc}", file=sys.stderr)
