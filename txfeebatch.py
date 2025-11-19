@@ -39,7 +39,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Batch-check transaction fee soundness for multiple tx hashes."
     )
-        p.add_argument(
+    p.add_argument(
         "--min-confirmations",
         type=int,
         default=0,
