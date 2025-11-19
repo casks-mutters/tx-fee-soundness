@@ -42,9 +42,12 @@ def fmt_gwei(wei: int) -> str:
     return f"{Web3.from_wei(wei, 'gwei'):.2f}"
 
 
-def fmt_ts(ts: int) -> str:
+def fmt_ts(ts: Optional[int]) -> str:
     # Block timestamp is seconds since epoch (UTC)
+    if ts is None:
+        return "-"
     return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S %Z")
+
 
 
 def build_parser() -> argparse.ArgumentParser:
