@@ -4,6 +4,8 @@ import sys
 import time
 from web3 import Web3
 
+__version__ = "0.1.0"
+
 # Default RPC configuration
 RPC_URL = os.getenv("RPC_URL", "https://mainnet.infura.io/v3/your_api_key")
 NETWORKS = {
@@ -40,6 +42,7 @@ def main():
     if not tx_hash.startswith("0x") or len(tx_hash) != 66:
         print("❌ Invalid transaction hash format.")
         sys.exit(1)
+    print(f"🔍 app.py tx inspector v{__version__}")
 
     w3 = Web3(Web3.HTTPProvider(RPC_URL))
     w3.eth.chain_id
