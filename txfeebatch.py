@@ -45,6 +45,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=0,
         help="Minimum confirmation count required per transaction.",
     )
+    p.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress per-transaction table output; only show summary and warnings.",
+    )
 
     p.add_argument(
         "--rpc",
@@ -134,6 +139,8 @@ def main() -> int:
     start_time = time.time()
 
     use_emoji = not args.no_emoji
+            quiet = args.quiet
+
     warn_emoji = "⚠️ " if use_emoji else "WARN: "
     err_emoji = "❌ " if use_emoji else "ERROR: "
     ok_emoji = "✅ " if use_emoji else ""
@@ -183,8 +190,9 @@ def main() -> int:
     any_error = False
     any_fee_violation = False
 
+    if not quiet:
         print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
-    print("# ------------------------------------------------------------------------------")
+        print("# ------------------------------------------------------------------------------")
 
 
     for raw in hashes_raw:
