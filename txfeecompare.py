@@ -431,7 +431,7 @@ def main() -> int:
     for idx, rpc_url in enumerate(args.rpc, start=1):
         label = f"RPC {idx}"
         print(f"Connecting to {label}: {rpc_url}")
-        res = check_endpoint(label, rpc_url, tx_hash, timeout)
+              res = check_endpoint(label, rpc_url, tx_hash, timeout, args.min_confirmations)
         results.append(res)
 
     elapsed = time.time() - start
