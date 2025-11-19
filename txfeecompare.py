@@ -303,6 +303,22 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
     if not notes:
         notes.append("✅ All checked fields are consistent across reachable endpoints.")
     gas_limit = tx.get("gas", None)
+    if args.short:
+        # Compact summary: show first reachable, non-pending result
+        for r in results:
+            if not (r.connected and r.tx_found and not r.pending):
+                continue
+            status_text = "success" if r.status == 1 else "failed"
+            fee_part = fmt_eth(r.total_fee_wei)
+            print(
+                f"{tx_hash} | status={status_text} | fee={fee_part} ETH | "
+                f"block={r.block_number} | conf={r.confirmations}"
+            )
+            break
+        # still compute notes and exit code
+        notes = summarize_inconsistencies(results)
+        has_warning = any(n.startswith("⚠️") for n in notes)
+        return 1 if has_warning else 0
 
     print(f"⛽ Gas Used:   {gas_used}")
     if gas_limit is not None:
