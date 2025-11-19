@@ -178,10 +178,10 @@ def main() -> int:
         print(f"{warn_emoji}Failed to fetch latest block number: {exc}", file=sys.stderr)
         latest_block = None
 
-    any_error = False
+     any_error = False
     any_fee_violation = False
 
-        print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
+    print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
     print("# ------------------------------------------------------------------------------")
 
 
