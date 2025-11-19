@@ -24,7 +24,17 @@ def wei_to_eth(value: int) -> float:
 def main():
     if len(sys.argv) != 2:
         print("Usage: python app.py <tx_hash>")
+        print("Hint: set RPC_URL env var to your provider endpoint.")
         sys.exit(1)
+
+    if "your_api_key" in RPC_URL:
+        print(
+            "❌ RPC_URL appears to still contain the placeholder 'your_api_key'. "
+            "Set RPC_URL to a real endpoint.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
 
     tx_hash = sys.argv[1]
     if not tx_hash.startswith("0x") or len(tx_hash) != 66:
