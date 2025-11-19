@@ -256,8 +256,9 @@ def main() -> int:
         fee_eth_str = fmt_eth(total_fee_wei)
         gas_price_gwei_str = fmt_gwei(gas_price_wei)
 
-        status_str = "success" if status == 1 else "failed"
+           status_str = "success" if status == 1 else "failed"
         icon = ok_emoji if status == 1 else err_emoji
+
 
 
                    print(
@@ -281,7 +282,8 @@ def main() -> int:
                     f"{args.max_fee_eth:.6f} ETH for tx {tx_hash}",
                     file=sys.stderr,
                 )
-
+tatus_display = status_str.upper() if status != 1 else status_str
+      status_display = status_str.upper() if status != 1 else status_str
     elapsed = time.time() - start_time
     if elapsed < 1:
         elapsed_str = f"{elapsed * 1000:.0f}ms"
