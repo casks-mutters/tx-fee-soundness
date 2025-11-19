@@ -117,12 +117,14 @@ def normalize_hash(tx_hash: str) -> Optional[str]:
     if not tx_hash.startswith("0x"):
         tx_hash = "0x" + tx_hash
     try:
-        tx_hash = Web3.to_hex(tx_hash)
+        # Make sure it's interpreted as a hex string
+        tx_hash = Web3.to_hex(hexstr=tx_hash)
     except Exception:
         return None
     if len(tx_hash) != 66:
         return None
     return tx_hash
+
 
 
 def main() -> int:
