@@ -121,7 +121,12 @@ def check_endpoint(
         chain_id = None
 
     # Normalize hash
-    tx_hash_hex = Web3.to_hex(tx_hash)
+        # Basic validation of tx hash
+    tx_hash = Web3.to_hex(args.tx_hash)
+    if not tx_hash.startswith("0x") or len(tx_hash) != 66:
+        print(f"❌ Invalid transaction hash format: {tx_hash}", file=sys.stderr)
+        return 1
+
 
     try:
        tx_type = tx.get("type", "0x0")
