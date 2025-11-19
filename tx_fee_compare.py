@@ -41,6 +41,14 @@ def fmt_gwei(wei: Optional[int]) -> str:
 
 
 def normalize_hash(tx_hash: str) -> str:
+    """
+    Normalize and validate a transaction hash.
+
+    Ensures:
+    - 0x prefix is present
+    - total length is 66 chars (0x + 64 hex)
+    - all characters after 0x are valid hex
+    """
     tx_hash = tx_hash.strip()
     if not tx_hash.startswith("0x"):
         tx_hash = "0x" + tx_hash
@@ -48,6 +56,7 @@ def normalize_hash(tx_hash: str) -> str:
         raise ValueError("tx hash must be 0x + 64 hex chars")
     int(tx_hash[2:], 16)  # validate hex
     return tx_hash.lower()
+
 
 
 def connect(rpc: str, label: str, timeout: int) -> Web3:
