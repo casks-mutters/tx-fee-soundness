@@ -124,10 +124,8 @@ def check_endpoint(
         return 1
 
 
-    try:
-       tx_type = tx.get("type", "0x0")
-    print(f"Tx Type: {tx_type}")
-        tx_found = True
+     try:
+        tx = w3.eth.get_transaction(tx_hash)
     except TransactionNotFound:
         return EndpointResult(
             label=label,
