@@ -437,7 +437,7 @@ def main() -> int:
     elapsed = time.time() - start
     print_table(results, Web3.to_hex(tx_hash), elapsed)
 
-    # Exit with non-zero code if there are obvious inconsistencies
+      # Exit with non-zero code if there are obvious inconsistencies
     notes = summarize_inconsistencies(results)
     has_warning = any(n.startswith("⚠️") for n in notes)
     return 1 if has_warning else 0
