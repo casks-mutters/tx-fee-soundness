@@ -31,6 +31,9 @@ class EndpointResult:
     gas_price_wei: Optional[int]
     total_fee_wei: Optional[int]
     confirmations: Optional[int]
+def is_tx_hash(s: str) -> bool:
+    s = s.strip()
+    return s.startswith("0x") and len(s) == 66
 
 
 
