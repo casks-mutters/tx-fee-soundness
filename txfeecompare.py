@@ -316,7 +316,7 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
     print(f"Tx Hash: {tx_hash}\n")
 
     # Endpoint summary
-    for i, r in enumerate(results, start=1):
+        for i, r in enumerate(results, start=1):
         label = r.label
         chain_part = f"chainId {r.chain_id}" if r.chain_id is not None else "chainId ?"
 
@@ -325,18 +325,24 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
             continue
 
         if not r.tx_found:
-            print(f"[{i}] {label}: ⚠️ connected ({chain_part}), tx NOT FOUND ({r.error})")
+            msg = r.error or "tx not found"
+            print(f"[{i}] {label}: ⚠️ connected ({chain_part}), tx NOT FOUND ({msg})")
             continue
 
         if r.pending:
             print(f"[{i}] {label}: ⏳ connected ({chain_part}), tx PENDING (no receipt yet)")
-                gas_prefix = "⛽ " if use_emoji else ""
-    fee_prefix = "💰 " if use_emoji else ""
-    time_prefix = "⏱️ " if use_emoji else ""
+            continue
 
-    print(f"{gas_prefix}Gas Used:   {gas_used}")
-    print(f"{fee_prefix}Total Fee:  {fmt_eth(total_fee_wei)} ETH")
-    print(f"{time_prefix}Elapsed: {elapsed:.2f}s")
+        status_emoji = "✅" if r.status == 1 else "❌"
+        if not use_emoji:
+            status_emoji = ""
+
+        fee_part = fmt_eth(r.total_fee_wei)
+        print(
+            f"[{i}] {label}: {status_emoji} connected ({chain_part}), "
+            f"block {r.block_number}, fee {fee_part} ETH"
+        )
+
 
             continue
 
