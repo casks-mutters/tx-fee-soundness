@@ -45,6 +45,20 @@ Status:  ✅ Success
 ⏱️ Elapsed: 2.45s
 
 
+
+---
+
+## Supported networks
+
+The script uses only standard JSON-RPC calls, so it works on:
+
+- Ethereum Mainnet
+- Testnets like Sepolia / Goerli
+- L2s such as Optimism, Base, Arbitrum
+- Sidechains like Polygon
+
+As long as your RPC endpoint is Ethereum-compatible, you can point `--rpc` at it.
+
 ## Notes
 
 Works on Mainnet, Sepolia, and other EVM networks.
