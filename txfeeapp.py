@@ -75,6 +75,7 @@ def main():
     print(f"🕒 Block Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(block.timestamp))} UTC")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
     print(f"⛽ Gas Used: {gas_used}")
+    print(f"📏 Gas Limit: {tx['gas']}")
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
     print(f"📉 Cost per gas: {wei_to_eth(gas_price):.12f} ETH/gas")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
