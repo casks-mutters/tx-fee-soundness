@@ -94,6 +94,8 @@ def main():
     if block.timestamp > time.time() + 120:
     print("⚠️  Warning: RPC returned a future timestamp.")
     print(f"📦 Status: {'✅ Success' if status == 1 else '❌ Failed'}")
+        if status != 1:
+        print("⚠️  Transaction failed, but gas fees were still paid.")
     print(f"⛽ Gas Used: {gas_used}")
     print(f"📏 Gas Limit: {tx['gas']}")
     print(f"⛽ Gas Price: {Web3.from_wei(gas_price, 'gwei'):.2f} Gwei")
