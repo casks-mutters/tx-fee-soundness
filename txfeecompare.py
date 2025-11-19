@@ -311,7 +311,8 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
     return notes
 
 
-def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> None:
+def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float, use_emoji: bool) -> None:
+
     print(f"\n=== tx-fee-soundness comparison ===")
     print(f"Tx Hash: {tx_hash}\n")
 
