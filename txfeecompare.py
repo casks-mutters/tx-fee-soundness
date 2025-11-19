@@ -271,6 +271,11 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
 
     if not notes:
         notes.append("✅ All checked fields are consistent across reachable endpoints.")
+    gas_limit = tx.get("gas", None)
+
+    print(f"⛽ Gas Used:   {gas_used}")
+    if gas_limit is not None:
+        print(f"⛽ Gas Limit:  {gas_limit}")
 
     return notes
 
