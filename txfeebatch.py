@@ -239,6 +239,9 @@ def main() -> int:
             total_fee_wei = gas_used * gas_price_wei
         else:
             total_fee_wei = None
+    total_fee_wei_all = 0
+    gas_price_sum_wei = 0
+    gas_price_count = 0
 
         # Confirmations
         if latest_block is not None and block_number is not None:
