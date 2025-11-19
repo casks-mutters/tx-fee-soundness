@@ -55,6 +55,8 @@ def main():
     status = rcpt.status
     gas_used = rcpt.gasUsed
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
+    if gas_price is None:
+    gas_price = 0
     total_fee_eth = wei_to_eth(gas_used * gas_price) if gas_price else 0.0
     confirmations = w3.eth.block_number - block_number
 
