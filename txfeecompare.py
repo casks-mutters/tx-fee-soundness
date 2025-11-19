@@ -55,10 +55,12 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Compare an Ethereum transaction across multiple RPC endpoints."
     )
-    p.add_argument(
-        "tx_hash",
-        help="Transaction hash (0x...)",
+ p.add_argument(
+        "--no-emoji",
+        action="store_true",
+        help="Disable emoji in output",
     )
+    
     p.add_argument(
         "--rpc",
         action="append",
@@ -312,9 +314,19 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
 
         if r.pending:
             print(f"[{i}] {label}: ⏳ connected ({chain_part}), tx PENDING (no receipt yet)")
+                gas_prefix = "⛽ " if use_emoji else ""
+    fee_prefix = "💰 " if use_emoji else ""
+    time_prefix = "⏱️ " if use_emoji else ""
+
+    print(f"{gas_prefix}Gas Used:   {gas_used}")
+    print(f"{fee_prefix}Total Fee:  {fmt_eth(total_fee_wei)} ETH")
+    print(f"{time_prefix}Elapsed: {elapsed:.2f}s")
+
             continue
 
-        status_emoji = "✅" if r.status == 1 else "❌"
+           status_emoji = "✅" if receipt.status == 1 else "❌"
+    if not use_emoji:
+        status_emoji = ""  # or set to plain text
         print(
             f"[{i}] {label}: {status_emoji} connected ({chain_part}), "
             f"block {r.block_number}, fee {fmt_eth(r.total_fee_wei)} ETH"
@@ -386,6 +398,7 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    use_emoji = not getattr(args, "no_emoji", False)
 
     if len(args.rpc) < 2:
         print("You must provide at least two --rpc endpoints to compare.", file=sys.stderr)
