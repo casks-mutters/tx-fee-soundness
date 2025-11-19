@@ -81,7 +81,8 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
-def load_hashes(args: argparse.Namespace) -> List[str]:
+def load_hashes(args: Args) -> List[str]:
+
     hashes: List[str] = []
 
     if args.tx:
