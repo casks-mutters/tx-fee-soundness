@@ -290,12 +290,18 @@ def main() -> int:
 
     print(f"\nProcessed {len(hashes_raw)} transaction(s) in {elapsed_str}.")
 
+    if any_error:
+        print("One or more errors occurred while processing transactions.", file=sys.stderr)
+    if any_fee_violation:
+        print("One or more transactions exceeded the configured fee threshold.", file=sys.stderr)
+
     # Exit codes:
     # - 0 if everything was fine and no fee violations
     # - 1 if any errors or fee violations occurred
     if any_error or any_fee_violation:
         return 1
     return 0
+
 
 
 if __name__ == "__main__":
