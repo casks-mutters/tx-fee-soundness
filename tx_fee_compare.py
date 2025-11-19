@@ -193,7 +193,15 @@ def compare_views(v1: TxView, v2: TxView) -> Dict[str, bool]:
     Compare key fields; return dict of field->True/False (match / mismatch).
     Only compares fields that are non-None on both sides.
     """
-    fields = ["chain_id", "block_number", "status", "gas_used", "gas_price_wei", "total_fee_wei"]
+       fields = [
+        "chain_id",
+        "block_number",
+        "status",
+        "gas_used",
+        "gas_price_wei",
+        "total_fee_wei",
+        "confirmations",
+    ]
     result: Dict[str, bool] = {}
     for f in fields:
         a = getattr(v1, f)
