@@ -240,11 +240,12 @@ def main() -> int:
         else:
             total_fee_wei = None
 
-        # Confirmations
+          # Confirmations: latest_block - tx_block + 1, at minimum 0
         if latest_block is not None and block_number is not None:
             confirmations = max(0, latest_block - block_number + 1)
         else:
             confirmations = None
+
         if confirmations is not None and confirmations < args.min_confirmations:
             any_error = True
             print(
