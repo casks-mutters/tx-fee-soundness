@@ -226,9 +226,11 @@ def main() -> int:
         if block_number is not None:
             try:
                 block = w3.eth.get_block(block_number)
-                block_time_str = fmt_ts(block.timestamp)
+                ts = getattr(block, "timestamp", None)
+                block_time_str = fmt_ts(ts if isinstance(ts, int) else None)
             except Exception:
                 block_time_str = "-"
+
 
         gas_price_wei = getattr(receipt, "effectiveGasPrice", None)
         if gas_price_wei is None:
