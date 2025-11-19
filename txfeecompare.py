@@ -262,13 +262,6 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
             v = getattr(r, field)
             values.setdefault(v, []).append(r.label)
         return values
-    if args.short:
-        print(
-            f"{tx_hash} | status={'success' if receipt.status == 1 else 'failed'} | "
-            f"fee={fmt_eth(total_fee_wei)} ETH | "
-            f"block={block_number} | conf={confirmations}"
-        )
-        return 0
 
     # ChainId
     chains = collect("chain_id")
@@ -293,7 +286,9 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
     # Gas price
     gas_price = collect("gas_price_wei")
     if len(gas_price) > 1:
-        notes.append("⚠️ Mismatched gas price across endpoints (can happen with different EIP-1559 views).")
+        notes.append(
+            "⚠️ Mismatched gas price across endpoints (can happen with different EIP-1559 views)."
+        )
 
     # Total fee
     total_fee = collect("total_fee_wei")
@@ -302,13 +297,9 @@ def summarize_inconsistencies(results: List[EndpointResult]) -> List[str]:
 
     if not notes:
         notes.append("✅ All checked fields are consistent across reachable endpoints.")
-    gas_limit = tx.get("gas", None)
-
-    print(f"⛽ Gas Used:   {gas_used}")
-    if gas_limit is not None:
-        print(f"⛽ Gas Limit:  {gas_limit}")
 
     return notes
+
 
 
 def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> None:
