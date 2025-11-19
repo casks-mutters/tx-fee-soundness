@@ -306,6 +306,13 @@ if args.rpc2 and args.rpc1 == args.rpc2:
 
     v1 = build_view(w3_1, args.rpc1, tx_hash)
     v2 = build_view(w3_2, args.rpc2, tx_hash) if w3_2 is not None else None
+    if v2 is not None and v1.chain_id is not None and v2.chain_id is not None:
+        if v1.chain_id != v2.chain_id:
+            print(
+                f"{err_icon} chainId mismatch between primary ({v1.chain_id}) and secondary ({v2.chain_id}).",
+                file=sys.stderr,
+            )
+            return 1
 
     elapsed = round(time.monotonic() - start, 3)
 
