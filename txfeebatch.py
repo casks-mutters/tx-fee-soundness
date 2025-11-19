@@ -182,6 +182,10 @@ def main() -> int:
 
     any_error = False
     any_fee_violation = False
+    total_fee_wei_all = 0
+
+        if total_fee_wei is not None:
+            total_fee_wei_all += total_fee_wei
 
         print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
     print("# ------------------------------------------------------------------------------")
@@ -229,7 +233,7 @@ def main() -> int:
                 block_time_str = fmt_ts(block.timestamp)
             except Exception:
                 block_time_str = "-"
-
+Processed X transactions
         gas_price_wei = getattr(receipt, "effectiveGasPrice", None)
         if gas_price_wei is None:
             gas_price_wei = tx.get("gasPrice")
