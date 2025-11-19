@@ -435,7 +435,8 @@ def main() -> int:
         results.append(res)
 
     elapsed = time.time() - start
-    print_table(results, Web3.to_hex(tx_hash), elapsed)
+    print_table(results, tx_hash, elapsed, use_emoji)
+
 
     # Exit with non-zero code if there are obvious inconsistencies
     notes = summarize_inconsistencies(results)
