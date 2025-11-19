@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+"""
+tx_fee_compare.py — Compare fee-related transaction fields across two RPC endpoints.
+
+Usage:
+  python tx_fee_compare.py 0x... --rpc1 <RPC_URL> --rpc2 <RPC_URL_2> [--json]
+"""
+
 import argparse
 import json
 import os
