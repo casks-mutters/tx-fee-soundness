@@ -188,11 +188,12 @@ def main() -> int:
 
 
     for raw in hashes_raw:
-        tx_hash = normalize_hash(raw)
+            tx_hash = normalize_hash(raw)
         if tx_hash is None:
-            print(f"{err_emoji}invalid-hash | {raw}")
+            print(f"{err_emoji}invalid-hash | original: {raw}", file=sys.stderr)
             any_error = True
             continue
+
 
         try:
             tx = w3.eth.get_transaction(tx_hash)
