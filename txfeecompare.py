@@ -51,12 +51,15 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Compare an Ethereum transaction across multiple RPC endpoints."
     )
- p.add_argument(
+    p.add_argument(
+        "tx_hash",
+        help="Transaction hash (0x + 64 hex characters)",
+    )
+    p.add_argument(
         "--no-emoji",
         action="store_true",
         help="Disable emoji in output",
     )
-    
     p.add_argument(
         "--rpc",
         action="append",
@@ -69,14 +72,19 @@ def build_parser() -> argparse.ArgumentParser:
         default=10,
         help="RPC request timeout in seconds (default: 10)",
     )
-        p.add_argument(
+    p.add_argument(
         "--min-confirmations",
         type=int,
         default=0,
         help="Minimum confirmation count required (default: 0)",
     )
-
+    p.add_argument(
+        "--short",
+        action="store_true",
+        help="Print a single-line summary instead of detailed output",
+    )
     return p
+
 
 
 def check_endpoint(
