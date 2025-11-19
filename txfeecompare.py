@@ -148,15 +148,10 @@ def check_endpoint(
             confirmations=None,
         )
 
-    # Try to get receipt
-     try:
+      # Try to get receipt
+    try:
         receipt = w3.eth.get_transaction_receipt(tx_hash)
     except TransactionNotFound:
-        print(f"⏳ Transaction pending: {tx_hash}")
-        print(f"From: {tx['from']}")
-        print(f"To:   {tx['to']}")
-        return 0
-
         # Present in mempool, but no receipt yet
         return EndpointResult(
             label=label,
@@ -167,7 +162,7 @@ def check_endpoint(
             tx_found=True,
             pending=True,
             from_addr=tx["from"],
-            to_addr=tx["to"],
+            to_addr=tx.get("to"),
             block_number=None,
             block_time=None,
             status=None,
@@ -176,6 +171,7 @@ def check_endpoint(
             total_fee_wei=None,
             confirmations=None,
         )
+
 
     block_number = receipt.blockNumber
     if block_number is None:
