@@ -62,6 +62,7 @@ def main():
     if rcpt.contractAddress:
     print(f"🏗️ Contract Created: {rcpt.contractAddress}")
     gas_used = rcpt.gasUsed
+    print(f"📊 Gas Limit vs Used: {tx['gas']} limit / {gas_used} used")
     gas_price = getattr(rcpt, "effectiveGasPrice", None) or getattr(rcpt, "gasPrice", None)
     if gas_price is None:
     gas_price = 0
