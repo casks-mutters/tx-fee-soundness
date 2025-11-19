@@ -90,9 +90,9 @@ def load_hashes(args: argparse.Namespace) -> List[str]:
     if args.file:
         try:
             with open(args.file, "r", encoding="utf-8") as f:
-                for line in f:
+                              for line in f:
                     line = line.strip()
-                    if not line:
+                    if not line or line.startswith("#"):
                         continue
                     hashes.append(line)
         except OSError as exc:
