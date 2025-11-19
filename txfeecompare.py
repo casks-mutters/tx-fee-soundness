@@ -34,8 +34,11 @@ class EndpointResult:
 
 
 
-def fmt_eth(wei: int) -> str:
+def fmt_eth(wei: Optional[int]) -> str:
+    if wei is None:
+        return "-"
     return f"{Web3.from_wei(wei, 'ether'):.6f}"
+
 
 
 def fmt_gwei(wei: int) -> str:
