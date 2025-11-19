@@ -83,15 +83,28 @@ def check_endpoint(
     label: str, rpc_url: str, tx_hash: str, timeout: int
 ) -> EndpointResult:
         try:
-        w3 = Web3(Web3.HTTPProvider(args.rpc, request_kwargs={"timeout": args.timeout}))
+        w3 = Web3(Web3.HTTPProvider(rpc_url, request_kwargs={"timeout": timeout}))
     except Exception as exc:
-        print(f"❌ Failed to create Web3 provider: {exc}", file=sys.stderr)
-        return 1
+        return EndpointResult(
+            label=label,
+            rpc_url=rpc_url,
+            connected=False,
+            chain_id=None,
+            error=f"failed to create provider: {exc}",
+            tx_found=False,
+            pending=False,
+            from_addr=None,
+            to_addr=None,
+            block_number=None,
+            block_time=None,
+            status=None,
+            gas_used=None,
+            gas_price_wei=None,
+            total_fee_wei=None,
+            confirmations=None,
+        )
 
     if not w3.is_connected():
-        print(f"❌ Could not connect to RPC endpoint: {args.rpc}", file=sys.stderr)
-        return 1
-
         return EndpointResult(
             label=label,
             rpc_url=rpc_url,
