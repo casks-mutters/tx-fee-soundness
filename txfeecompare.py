@@ -409,7 +409,7 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
     else:
         print(f"⏱️ Elapsed: {elapsed:.2f}s")
 
-
+fmt_ts(r.block_time)
 
 def main() -> int:
     parser = build_parser()
