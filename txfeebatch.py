@@ -34,7 +34,9 @@ def fmt_ts(ts: Optional[int]) -> str:
         return "-"
     return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
+# Convenience alias for argument namespace type
 Args = argparse.Namespace
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Batch-check transaction fee soundness for multiple tx hashes."
