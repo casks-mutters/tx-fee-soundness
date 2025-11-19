@@ -91,10 +91,7 @@ def load_hashes(args: argparse.Namespace) -> List[str]:
         try:
             with open(args.file, "r", encoding="utf-8") as f:
                 for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    hashes.append(line)
+               line = line.strip()
         except OSError as exc:
             print(f"❌ Failed to read file {args.file}: {exc}", file=sys.stderr)
             sys.exit(1)
