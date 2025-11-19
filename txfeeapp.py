@@ -81,6 +81,8 @@ def main():
     print(f"📉 Cost per gas: {wei_to_eth(gas_price):.12f} ETH/gas")
     print(f"💰 Total Fee: {total_fee_eth:.6f} ETH")
     print(f"✅ Confirmations: {confirmations}")
+    if confirmations < 5:
+    print("⚠️  Low confirmations — possible reorg risk.")
     print(f"⏱️  Elapsed: {time.time() - start_time:.2f}s")
 
 if __name__ == "__main__":
