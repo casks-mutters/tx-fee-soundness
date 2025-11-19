@@ -15,7 +15,11 @@ CHAIN_NAMES = {
     42161: "Arbitrum One",
     8453: "Base",
     137: "Polygon",
+    56: "BSC",
+    43114: "Avalanche C-Chain",
+    59144: "Linea",
 }
+
 
 def fmt_eth(wei: Optional[int]) -> str:
     if wei is None:
