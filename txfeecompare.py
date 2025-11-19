@@ -38,8 +38,11 @@ def fmt_eth(wei: int) -> str:
     return f"{Web3.from_wei(wei, 'ether'):.6f}"
 
 
-def fmt_gwei(wei: int) -> str:
+def fmt_gwei(wei: Optional[int]) -> str:
+    if wei is None:
+        return "-"
     return f"{Web3.from_wei(wei, 'gwei'):.2f}"
+
 
 
 def fmt_ts(ts: int) -> str:
