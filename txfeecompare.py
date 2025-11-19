@@ -8,6 +8,9 @@ from typing import Optional, List, Dict, Any
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
 
+# txfeeapp.py — add right after the existing imports
+
+VERSION = "0.1.0"
 
 @dataclass
 class EndpointResult:
@@ -44,7 +47,9 @@ def fmt_gwei(wei: Optional[int]) -> str:
         return "-"
     return f"{Web3.from_wei(wei, 'gwei'):.2f}"
 
-
+  if getattr(args, "version", False):
+        print(f"tx-fee-soundness {VERSION}")
+        return 0
 def fmt_ts(ts: Optional[int]) -> str:
     if ts is None:
         return "-"
