@@ -41,6 +41,9 @@ def main():
 
     try:
         tx = w3.eth.get_transaction(tx_hash)
+        if tx is None:
+    print("❌ Transaction not found on this network.")
+    sys.exit(1)
         if tx and tx.blockNumber is None:
             print("⏳ Transaction is still pending and not yet mined.")
             sys.exit(0)
