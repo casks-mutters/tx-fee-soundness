@@ -171,6 +171,10 @@ def main() -> int:
             f"Max fee threshold enabled: {args.max_fee_eth:.6f} ETH "
             "(transactions exceeding this will be flagged)."
         )
+    if args.min_confirmations > 0:
+        print(
+            f"Minimum confirmations required per transaction: {args.min_confirmations}"
+        )
 
 
     # Fetch latest block once for confirmation estimates; may be slightly stale but OK for batch
