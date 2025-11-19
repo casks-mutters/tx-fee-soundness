@@ -230,7 +230,7 @@ def main() -> int:
             except Exception:
                 block_time_str = "-"
 
-        gas_price_wei = getattr(receipt, "effectiveGasPrice", None)
+          gas_price_wei = getattr(receipt, "effectiveGasPrice", None)
         if gas_price_wei is None:
             gas_price_wei = tx.get("gasPrice")
 
