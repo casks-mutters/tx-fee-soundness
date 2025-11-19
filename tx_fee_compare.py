@@ -258,6 +258,11 @@ if args.rpc2 and args.rpc1 == args.rpc2:
     err_icon = "❌" if use_emoji else "[ERR]"
 
     start = time.monotonic()
+    if args.rpc2 and args.rpc1 == args.rpc2:
+        print(
+            "WARN: rpc1 and rpc2 are identical; comparison may be less useful.",
+            file=sys.stderr,
+        )
 
     # Connect primary
     try:
