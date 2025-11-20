@@ -48,7 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--min-confirmations",
         type=int,
         default=0,
-        help="Minimum confirmation count required per transaction.",
+        help="Minimum confirmation count required per transaction (must be >= 0).",
     )
 
     p.add_argument(
@@ -140,6 +140,9 @@ def normalize_hash(tx_hash: str) -> Optional[str]:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    if args.min_confirmations < 0:
+        print("ERROR: --min-confirmations must be >= 0", file=sys.stderr)
+        return 1
 
     start_time = time.time()
 
