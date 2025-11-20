@@ -209,7 +209,7 @@ def check_endpoint(
 
     block_number = receipt.blockNumber
     if block_number is None:
-        # Should be rare; treat as pending-ish
+        # Very rare; treat as pending-ish
         return EndpointResult(
             label=label,
             rpc_url=rpc_url,
@@ -219,7 +219,7 @@ def check_endpoint(
             tx_found=True,
             pending=True,
             from_addr=tx["from"],
-            to_addr=tx["to"],
+            to_addr=tx.get("to"),
             block_number=None,
             block_time=None,
             status=None,
@@ -244,26 +244,25 @@ def check_endpoint(
         gas_used * gas_price_wei if gas_used is not None and gas_price_wei is not None else None
     )
 
-       confirmations = max(0, latest_block - block_number + 1)
+    confirmations = max(0, latest_block - block_number + 1)
 
-    if confirmations < args.min_confirmations:
-        print(
-            f"⚠️ Confirmations ({confirmations}) are below required minimum "
-            f"({args.min_confirmations}).",
-            file=sys.stderr,
+    # Just a soft warning via error field if under min confirmations
+    error_msg = None
+    if min_confirmations and confirmations < min_confirmations:
+        error_msg = (
+            f"confirmations ({confirmations}) below required minimum ({min_confirmations})"
         )
-
 
     return EndpointResult(
         label=label,
         rpc_url=rpc_url,
         connected=True,
         chain_id=chain_id,
-        error=None,
+        error=error_msg,
         tx_found=True,
         pending=False,
         from_addr=tx["from"],
-        to_addr=tx["to"],
+        to_addr=tx.get("to"),
         block_number=block_number,
         block_time=block.timestamp,
         status=status,
@@ -272,6 +271,7 @@ def check_endpoint(
         total_fee_wei=total_fee_wei,
         confirmations=confirmations,
     )
+
     p.add_argument(
         "--short",
         action="store_true",
