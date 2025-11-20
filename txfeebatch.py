@@ -50,6 +50,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=0,
         help="Minimum confirmation count required per transaction (must be >= 0).",
     )
+    p.add_argument(
+        "--no-header",
+        action="store_true",
+        help="Do not print the table header line.",
+    )
 
     p.add_argument(
         "--rpc",
@@ -134,7 +139,7 @@ def normalize_hash(tx_hash: str) -> Optional[str]:
     if len(tx_hash) != 66:
         return None
     return tx_hash
-
+   no_header = args.no_header
 
 
 def main() -> int:
