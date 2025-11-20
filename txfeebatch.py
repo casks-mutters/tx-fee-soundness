@@ -172,8 +172,11 @@ def main() -> int:
 
       # Basic intro line
     if chain_id is not None:
-        network_name = CHAIN_NAMES.get(chain_id, "Unknown network")
+        network_name = CHAIN_NAMES.get(chain_id)
+        if network_name is None:
+            network_name = "Unknown network"
         print(f"Connected to RPC {args.rpc} (chainId {chain_id}, {network_name})")
+
     else:
         print(f"Connected to RPC {args.rpc}")
     if args.max_fee_eth is not None:
