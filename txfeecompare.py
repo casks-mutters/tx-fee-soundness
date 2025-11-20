@@ -136,12 +136,28 @@ def check_endpoint(
     except Exception:
         chain_id = None
 
-    # Normalize hash
-        # Basic validation of tx hash
-    tx_hash = Web3.to_hex(args.tx_hash)
-    if not tx_hash.startswith("0x") or len(tx_hash) != 66:
-        print(f"❌ Invalid transaction hash format: {tx_hash}", file=sys.stderr)
-        return 1
+
+    # Normalize and basic-validate tx hash
+    tx_hash = Web3.to_hex(tx_hash)
+    if not is_tx_hash(tx_hash):
+        return EndpointResult(
+            label=label,
+            rpc_url=rpc_url,
+            connected=True,
+            chain_id=chain_id,
+            error=f"invalid tx hash format: {tx_hash}",
+            tx_found=False,
+            pending=False,
+            from_addr=None,
+            to_addr=None,
+            block_number=None,
+            block_time=None,
+            status=None,
+            gas_used=None,
+            gas_price_wei=None,
+            total_fee_wei=None,
+            confirmations=None,
+        )
 
 
     try:
