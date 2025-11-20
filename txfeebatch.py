@@ -195,14 +195,16 @@ def main() -> int:
 
         try:
             tx = w3.eth.get_transaction(tx_hash)
-        except TransactionNotFound:
-            print(f"{err_emoji}{tx_hash} | not-found | - | - | - | - | -")
+           except TransactionNotFound:
+            print(f"{err_emoji}{tx_hash} | not-found | - | - | - | - | -", file=sys.stderr)
             any_error = True
             continue
-        except Exception as exc:
-            print(f"{err_emoji}{tx_hash} | error-fetching-tx: {exc}")
+             except Exception as exc:
+            print(f"{err_emoji}{tx_hash} | error-fetching-receipt: {exc}", file=sys.stderr)
             any_error = True
             continue
+
+
 
         # Try to get receipt
         try:
