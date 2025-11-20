@@ -7,7 +7,6 @@ from typing import Optional, List, Dict, Any
 
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
-from typing import Union
 
 @dataclass
 class EndpointResult:
