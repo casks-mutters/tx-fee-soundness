@@ -16,7 +16,7 @@ CHAIN_NAMES = {
     8453: "Base",
     137: "Polygon",
 }
-
+VERSION = "0.1.0"
 def fmt_eth(wei: Optional[int]) -> str:
     if wei is None:
         return "-"
@@ -79,6 +79,13 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Disable emoji in output (useful for CI logs).",
     )
+    p.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {VERSION}",
+        help="Show program version and exit.",
+    )
+
     return p
 
 
