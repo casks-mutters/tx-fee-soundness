@@ -140,6 +140,9 @@ def normalize_hash(tx_hash: str) -> Optional[str]:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    if not args.rpc.strip():
+        print("ERROR: --rpc endpoint URL must not be empty.", file=sys.stderr)
+        return 1
 
     start_time = time.time()
 
