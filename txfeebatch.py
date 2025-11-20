@@ -327,6 +327,9 @@ def main() -> int:
         return 1
     return 0
 
+# Example usage:
+#   python check_fees.py --rpc https://mainnet.infura.io/v3/KEY --tx 0x1234... --tx 0xabcd...
+#   python check_fees.py --rpc https://... --file tx_hashes.txt --min-confirmations 3
 
 if __name__ == "__main__":
     raise SystemExit(main())
