@@ -351,13 +351,7 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
 
         if r.pending:
             print(f"[{i}] {label}: ⏳ connected ({chain_part}), tx PENDING (no receipt yet)")
-                gas_prefix = "⛽ " if use_emoji else ""
-    fee_prefix = "💰 " if use_emoji else ""
-    time_prefix = "⏱️ " if use_emoji else ""
 
-    print(f"{gas_prefix}Gas Used:   {gas_used}")
-    print(f"{fee_prefix}Total Fee:  {fmt_eth(total_fee_wei)} ETH")
-    print(f"{time_prefix}Elapsed: {elapsed:.2f}s")
 
             continue
 
