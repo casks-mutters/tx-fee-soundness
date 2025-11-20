@@ -467,4 +467,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # CLI entrypoint
     raise SystemExit(main())
+
