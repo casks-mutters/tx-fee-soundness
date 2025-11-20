@@ -256,16 +256,14 @@ def main() -> int:
         fee_eth_str = fmt_eth(total_fee_wei)
         gas_price_gwei_str = fmt_gwei(gas_price_wei)
 
-        status_str = "success" if status == 1 else "failed"
+            status_str = "success" if status == 1 else "failed"
         icon = ok_emoji if status == 1 else err_emoji
 
-
-                   print(
+        print(
             f"{icon}{tx_hash} | {status_str} | "
             f"{block_number if block_number is not None else '-'} | "
             f"{block_time_str} | "
             f"{confirmations if confirmations is not None else '-'} | "
-
             f"{fee_eth_str} | "
             f"{gas_used if gas_used is not None else '-'} | "
             f"{gas_price_gwei_str}"
