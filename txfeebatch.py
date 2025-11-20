@@ -1,3 +1,7 @@
+"""
+CLI tool to batch-check Ethereum-style transaction fees and confirmations
+across multiple chains using a single RPC endpoint.
+"""
 import argparse
 import sys
 import time
