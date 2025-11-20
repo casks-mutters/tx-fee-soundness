@@ -460,7 +460,7 @@ def main() -> int:
     print_table(results, tx_hash, elapsed, use_emoji)
 
 
-    # Exit with non-zero code if there are obvious inconsistencies
+      # Exit with non-zero code if there are obvious inconsistencies
     notes = summarize_inconsistencies(results)
     has_warning = any(n.startswith("⚠️") for n in notes)
     return 1 if has_warning else 0
