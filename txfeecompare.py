@@ -419,12 +419,13 @@ def print_table(results: List[EndpointResult], tx_hash: str, elapsed: float) -> 
     for note in summarize_inconsistencies(results):
         print(note)
 
-       if elapsed < 1:
+      if elapsed < 1:
         print(f"⏱️ Elapsed: {elapsed * 1000:.0f}ms")
     else:
         print(f"⏱️ Elapsed: {elapsed:.2f}s")
 
 fmt_ts(r.block_time)
+
 
 def main() -> int:
     parser = build_parser()
