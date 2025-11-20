@@ -436,8 +436,14 @@ def main() -> int:
         print("You must provide at least two --rpc endpoints to compare.", file=sys.stderr)
         return 1
 
-    tx_hash = args.tx_hash
+    raw_hash = args.tx_hash.strip()
+    if not is_tx_hash(raw_hash):
+        print(f"❌ Invalid transaction hash format: {raw_hash}", file=sys.stderr)
+        return 1
+
+    tx_hash = Web3.to_hex(raw_hash)
     timeout = args.timeout
+
    
     print(f"Tx Type: {tx_type}")
 
