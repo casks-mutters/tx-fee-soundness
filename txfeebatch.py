@@ -136,10 +136,10 @@ def normalize_hash(tx_hash: str) -> Optional[str]:
         tx_hash = Web3.to_hex(hexstr=tx_hash)
     except Exception:
         return None
-    if len(tx_hash) != 66:
+      if len(tx_hash) != 66:
         return None
     return tx_hash
-   no_header = args.no_header
+
 
 
 def main() -> int:
@@ -208,8 +208,10 @@ def main() -> int:
      any_error = False
     any_fee_violation = False
 
-    print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
-    print("# ------------------------------------------------------------------------------")
+       if not args.no_header:
+        print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
+        print("# ------------------------------------------------------------------------------")
+
 
 
     for raw in hashes_raw:
