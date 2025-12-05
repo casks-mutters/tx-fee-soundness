@@ -107,14 +107,20 @@ def load_hashes(args: Args) -> List[str]:
     if args.tx:
         hashes.extend(args.tx)
 
-    if args.file:
+       if args.file:
         try:
             with open(args.file, "r", encoding="utf-8") as f:
                 for line in f:
-               line = line.strip()
+                    line = line.strip()
+                    if not line:
+                        continue  # skip empty lines
+                    if line.startswith("#"):
+                        continue  # allow comments in file
+                    hashes.append(line)
         except OSError as exc:
             print(f"❌ Failed to read file {args.file}: {exc}", file=sys.stderr)
             sys.exit(1)
+
 
     # Deduplicate while preserving order
     seen = set()
