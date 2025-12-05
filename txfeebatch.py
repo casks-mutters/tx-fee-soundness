@@ -1,351 +1,394 @@
+#!/usr/bin/env python3
 """
-CLI tool to batch-check Ethereum-style transaction fees and confirmations
-across multiple chains using a single RPC endpoint.
+Profile recent gas behavior on an EVM network.
+
+Samples recent blocks and computes percentiles for:
+- base fee (Gwei)
+- effective gas price (Gwei)
+- approximate priority tip (Gwei)
 """
+
+# Example:
+#   python fee_profile.py \
+#       --rpc https://mainnet.infura.io/v3/YOUR_KEY \
+#       --blocks 300 --step 3 --json
+
 import argparse
+import json
+import os
 import sys
 import time
-from datetime import datetime, timezone
-from typing import List, Optional
+from statistics import median
+from typing import Dict, List, Optional, Tuple
 
 from web3 import Web3
-from web3.exceptions import TransactionNotFound
 
-CHAIN_NAMES = {
+
+__version__ = "0.1.0"
+
+DEFAULT_RPC = os.getenv("RPC_URL", "https://mainnet.infura.io/v3/YOUR_API_KEY")
+DEFAULT_BLOCKS = int(os.getenv("FEE_PROFILE_BLOCKS", "300"))
+DEFAULT_STEP = int(os.getenv("FEE_PROFILE_STEP", "3"))
+DEFAULT_TIMEOUT = int(os.getenv("FEE_PROFILE_TIMEOUT", "30"))
+
+# Re-use the same kind of mapping as tx_fee_compare
+NETWORKS: Dict[int, str] = {
     1: "Ethereum Mainnet",
-    5: "Goerli",
-    11155111: "Sepolia",
+    11155111: "Sepolia Testnet",
     10: "Optimism",
+    137: "Polygon",
     42161: "Arbitrum One",
     8453: "Base",
-    137: "Polygon",
+    59144: "Linea",
+    324: "zkSync Era",
 }
-VERSION = "0.1.0"
-def fmt_eth(wei: Optional[int]) -> str:
-    if wei is None:
-        return "-"
-    return f"{Web3.from_wei(wei, 'ether'):.6f}"
 
 
-def fmt_gwei(wei: Optional[int]) -> str:
-    if wei is None:
-        return "-"
-    return f"{Web3.from_wei(wei, 'gwei'):.2f}"
+def network_name(cid: Optional[int]) -> str:
+    """Map a chain ID to a human-readable network name."""
+    if cid is None:
+        return "Unknown"
+    return NETWORKS.get(cid, f"Unknown (chainId {cid})")
 
 
-def fmt_ts(ts: Optional[int]) -> str:
-    if ts is None:
-        return "-"
-    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-
-
-Args = argparse.Namespace
-def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(
-        description="Batch-check transaction fee soundness for multiple tx hashes.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    p.add_argument(
-        "--min-confirmations",
-        type=int,
-        default=0,
-        help="Minimum confirmation count required per transaction (must be >= 0).",
-    )
-    p.add_argument(
-        "--no-header",
-        action="store_true",
-        help="Do not print the table header line.",
-    )
-
-    p.add_argument(
-        "--rpc",
-        required=True,
-        help="HTTP RPC endpoint URL (e.g. https://mainnet.infura.io/v3/KEY)",
-    )
-    p.add_argument(
-        "--tx",
-        action="append",
-        default=[],
-        help="Transaction hash (0x...). Can be specified multiple times.",
-    )
-    p.add_argument(
-        "--file",
-        help="Optional path to a file with one transaction hash per line.",
-    )
-    p.add_argument(
-        "--timeout",
-        type=int,
-        default=10,
-        help="RPC request timeout in seconds (default: 10)",
-    )
-    p.add_argument(
-        "--max-fee-eth",
-        type=float,
-        default=None,
-        help="If set, mark and fail if any tx fee exceeds this threshold (in ETH).",
-    )
-    p.add_argument(
-        "--no-emoji",
-        action="store_true",
-        help="Disable emoji in output (useful for CI logs).",
-    )
-    p.add_argument(
-        "--version",
-        action="version",
-        version=f"%(prog)s {VERSION}",
-        help="Show program version and exit.",
-    )
-
-    return p
-
-
-def load_hashes(args: Args) -> List[str]:
-
-    hashes: List[str] = []
-
-    if args.tx:
-        hashes.extend(args.tx)
-
-       if args.file:
-        try:
-            with open(args.file, "r", encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue  # skip empty lines
-                    if line.startswith("#"):
-                        continue  # allow comments in file
-                    hashes.append(line)
-        except OSError as exc:
-            print(f"❌ Failed to read file {args.file}: {exc}", file=sys.stderr)
-            sys.exit(1)
-
-
-    # Deduplicate while preserving order
-    seen = set()
-    unique_hashes: List[str] = []
-    for h in hashes:
-        if h not in seen:
-            seen.add(h)
-            unique_hashes.append(h)
-
-    return unique_hashes
-
-
-def normalize_hash(tx_hash: str) -> Optional[str]:
-    tx_hash = tx_hash.strip()
-    if not tx_hash:
-        return None
-    if not tx_hash.startswith("0x"):
-        tx_hash = "0x" + tx_hash
-    try:
-        # Make sure it's interpreted as a hex string
-        tx_hash = Web3.to_hex(hexstr=tx_hash)
-    except Exception:
-        return None
-      if len(tx_hash) != 66:
-        return None
-    return tx_hash
-
-
-
-def main() -> int:
-    parser = build_parser()
-    args = parser.parse_args()
-    if args.min_confirmations < 0:
-        print("ERROR: --min-confirmations must be >= 0", file=sys.stderr)
-        return 1
-
-    start_time = time.time()
-
-    use_emoji = not args.no_emoji
-    warn_emoji = "⚠️ " if use_emoji else "WARN: "
-    err_emoji = "❌ " if use_emoji else "ERROR: "
-    ok_emoji = "✅ " if use_emoji else ""
-    pending_emoji = "⏳ " if use_emoji else "PENDING: "
-
-    hashes_raw = load_hashes(args)
-    if not hashes_raw:
-        print(f"{err_emoji}No transaction hashes provided (use --tx and/or --file).", file=sys.stderr)
-        return 1
-
-    # Connect to RPC
-    try:
-        w3 = Web3(Web3.HTTPProvider(args.rpc, request_kwargs={"timeout": args.timeout}))
-    except Exception as exc:
-        print(f"{err_emoji}Failed to create Web3 provider: {exc}", file=sys.stderr)
-        return 1
+def connect(rpc: str, timeout: int) -> Web3:
+    """Connect to an RPC endpoint and print a short banner."""
+    start = time.time()
+    w3 = Web3(Web3.HTTPProvider(rpc, request_kwargs={"timeout": timeout}))
 
     if not w3.is_connected():
-        print(f"{err_emoji}Could not connect to RPC endpoint: {args.rpc}", file=sys.stderr)
-        return 1
+        print(f"❌ Failed to connect to RPC endpoint: {rpc}", file=sys.stderr)
+        sys.exit(1)
 
+    # Optional PoA middleware for some L2s/testnets
     try:
-        chain_id = w3.eth.chain_id
+        from web3.middleware import geth_poa_middleware
+
+        w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     except Exception:
-        chain_id = None
+        # Best-effort; ignore if unavailable
+        pass
 
-      # Basic intro line
-    if chain_id is not None:
-        network_name = CHAIN_NAMES.get(chain_id)
-        if network_name is None:
-            network_name = "Unknown network"
-        print(f"Connected to RPC {args.rpc} (chainId {chain_id}, {network_name})")
-
-    else:
-        print(f"Connected to RPC {args.rpc}")
-    if args.max_fee_eth is not None:
-        print(
-            f"Max fee threshold enabled: {args.max_fee_eth:.6f} ETH "
-            "(transactions exceeding this will be flagged)."
-        )
-    if args.min_confirmations > 0:
-        print(
-            f"Minimum confirmations required per transaction: {args.min_confirmations}"
-        )
-
-
-    # Fetch latest block once for confirmation estimates; may be slightly stale but OK for batch
+    latest = w3.eth.block_number
     try:
-        latest_block = w3.eth.block_number
-    except Exception as exc:
-        print(f"{warn_emoji}Failed to fetch latest block number: {exc}", file=sys.stderr)
-        latest_block = None
+        cid = int(w3.eth.chain_id)
+    except Exception:
+        cid = None
 
-     any_error = False
-    any_fee_violation = False
-
-       if not args.no_header:
-        print("\n# tx | status | block | time(UTC) | conf | fee(ETH) | gasUsed | gasPrice(Gwei)")
-        print("# ------------------------------------------------------------------------------")
-
-
-
-    for raw in hashes_raw:
-            tx_hash = normalize_hash(raw)
-        if tx_hash is None:
-            print(f"{err_emoji}invalid-hash | original: {raw}", file=sys.stderr)
-            any_error = True
-            continue
+    latency = time.time() - start
+    print(
+        f"🌐 chainId={cid} ({network_name(cid)}) tip={latest}",
+        file=sys.stderr,
+    )
+    print(f"⚡ RPC connected in {latency:.2f}s", file=sys.stderr)
+    return w3
 
 
-        try:
-            tx = w3.eth.get_transaction(tx_hash)
-           except TransactionNotFound:
-            print(f"{err_emoji}{tx_hash} | not-found | - | - | - | - | -", file=sys.stderr)
-            any_error = True
-            continue
-             except Exception as exc:
-            print(f"{err_emoji}{tx_hash} | error-fetching-receipt: {exc}", file=sys.stderr)
-            any_error = True
-            continue
+def pct(values: List[float], q: float) -> float:
+    """Return the q-th percentile (0..1) of a list of floats."""
+    if not values:
+        return 0.0
+    q = max(0.0, min(1.0, q))
+    sorted_vals = sorted(values)
+    idx = int(round(q * (len(sorted_vals) - 1)))
+    return sorted_vals[idx]
 
 
+def sample_block_fees(block, base_fee_wei: int) -> Tuple[List[float], List[float]]:
+    """
+    Returns (effective_prices_gwei, tip_gwei_approx) for txs in the block.
 
-        # Try to get receipt
-        try:
-            receipt = w3.eth.get_transaction_receipt(tx_hash)
-        except TransactionNotFound:
-            # Pending tx
-            print(
-                f"{pending_emoji}{tx_hash} | pending | - | - | - | - | -"
-            )
-            continue
-        except Exception as exc:
-            print(f"{err_emoji}{tx_hash} | error-fetching-receipt: {exc}")
-            any_error = True
-            continue
+    Approximation:
+      - EIP-1559: effective ~= min(maxFeePerGas, baseFee + maxPriorityFeePerGas)
+                  tip ~= maxPriorityFeePerGas
+      - Legacy:   effective = gasPrice
+                  tip ~= max(0, gasPrice - baseFee)
+    """
+    eff: List[float] = []
+    tip: List[float] = []
+    bf = int(base_fee_wei) if base_fee_wei is not None else 0
 
-        block_number = receipt.blockNumber
-        status = receipt.status
-        gas_used = receipt.gasUsed
-        block_time_str = "-"
-        if block_number is not None:
-            try:
-                block = w3.eth.get_block(block_number)
-                block_time_str = fmt_ts(block.timestamp)
-            except Exception:
-                block_time_str = "-"
-
-          gas_price_wei = getattr(receipt, "effectiveGasPrice", None)
-        if gas_price_wei is None:
-            gas_price_wei = tx.get("gasPrice")
-
-        total_fee_wei: Optional[int]
-        if gas_used is not None and gas_price_wei is not None:
-            total_fee_wei = gas_used * gas_price_wei
+    for tx in block.transactions:
+        # web3.py may return AttributeDict or dict
+        if isinstance(tx, dict):
+            ttype = tx.get("type", 0)
+            mpp = tx.get("maxPriorityFeePerGas", 0)
+            mfp = tx.get("maxFeePerGas", 0)
+            gp = tx.get("gasPrice", 0)
         else:
-            total_fee_wei = None
-    total_fee_wei_all = 0
-    gas_price_sum_wei = 0
-    gas_price_count = 0
+            ttype = getattr(tx, "type", 0)
+            mpp = getattr(tx, "maxPriorityFeePerGas", 0)
+            mfp = getattr(tx, "maxFeePerGas", 0)
+            gp = getattr(tx, "gasPrice", 0)
 
-          # Confirmations: latest_block - tx_block + 1, at minimum 0
-        if latest_block is not None and block_number is not None:
-            confirmations = max(0, latest_block - block_number + 1)
+        if ttype == 2:  # EIP-1559
+            mpp = int(mpp or 0)
+            mfp = int(mfp or 0)
+            effective = min(mfp, bf + mpp)
+            eff.append(float(Web3.from_wei(effective, "gwei")))
+            tip.append(float(Web3.from_wei(mpp, "gwei")))
         else:
-            confirmations = None
+            gp = int(gp or 0)
+            eff.append(float(Web3.from_wei(gp, "gwei")))
+            tip.append(float(Web3.from_wei(max(0, gp - bf), "gwei")))
 
-        if confirmations is not None and confirmations < args.min_confirmations:
-            any_error = True
+    return eff, tip
+
+
+def analyze(
+    w3: Web3,
+    blocks: int,
+    step: int,
+    head_override: Optional[int] = None,
+) -> Dict[str, object]:
+    """
+    Scan recent blocks and compute gas fee statistics.
+
+    Returns a dict with:
+      - chainId, network, head, sampledBlocks, blockSpan, step, timingSec
+      - avgBlockTimeSec
+      - baseFeeGwei      {p50, p95, min, max}
+      - effectivePriceGwei {p50, p95, min, max, count}
+      - tipGweiApprox      {p50, p95, min, max, count, countZero}
+    """
+    head = int(head_override) if head_override is not None else int(w3.eth.block_number)
+    start = max(0, head - blocks + 1)
+    t0 = time.time()
+
+    basefees: List[float] = []
+    eff_prices: List[float] = []
+    tips: List[float] = []
+
+    print(
+        f"🔍 Scanning the last {blocks} blocks (every {step}th block)...",
+        file=sys.stderr,
+    )
+
+    # Iterate backwards in steps for speed
+    for n in range(head, start - 1, -step):
+        blk = w3.eth.get_block(n, full_transactions=True)
+        # EIP-1559 base fee may be under different attribute names
+        bf = getattr(blk, "baseFeePerGas", None)
+        if bf is None:
+            bf = getattr(blk, "base_fee_per_gas", 0) or 0
+        bf = int(bf)
+
+        basefees.append(float(Web3.from_wei(bf, "gwei")))
+        eff_gwei, tip_gwei = sample_block_fees(blk, bf)
+        eff_prices.extend(eff_gwei)
+        tips.extend(tip_gwei)
+
+        # Show progress every 20 sampled blocks
+        if len(basefees) % 20 == 0:
             print(
-                f"{warn_emoji}Confirmations {confirmations} below minimum "
-                f"{args.min_confirmations} for tx {tx_hash}",
+                f"🔍 Sampled {len(basefees)} blocks so far (latest={n})",
                 file=sys.stderr,
             )
 
-        fee_eth_str = fmt_eth(total_fee_wei)
-        gas_price_gwei_str = fmt_gwei(gas_price_wei)
+    elapsed = time.time() - t0
 
-            status_str = "success" if status == 1 else "failed"
-        icon = ok_emoji if status == 1 else err_emoji
+    # Estimate average block time using endpoints of the span
+    if len(basefees) >= 2 and head > start:
+        first_block = w3.eth.get_block(head)
+        last_block = w3.eth.get_block(start)
+        time_diff = int(first_block.timestamp) - int(last_block.timestamp)
+        block_time_avg = max(0.0, time_diff / float(head - start))
+    else:
+        block_time_avg = 0.0
 
+    zero_tip_count = sum(1 for x in tips if x == 0.0)
+
+    try:
+        cid = int(w3.eth.chain_id)
+    except Exception:
+        cid = None
+
+    return {
+        "chainId": cid,
+        "network": network_name(cid),
+        "avgBlockTimeSec": round(block_time_avg, 2),
+        "head": head,
+        "sampledBlocks": len(range(head, start - 1, -step)),
+        "blockSpan": blocks,
+        "step": step,
+        "timingSec": round(elapsed, 2),
+        "baseFeeGwei": {
+            "p50": round(median(basefees), 3) if basefees else 0.0,
+            "p95": round(pct(basefees, 0.95), 3) if basefees else 0.0,
+            "min": round(min(basefees), 3) if basefees else 0.0,
+            "max": round(max(basefees), 3) if basefees else 0.0,
+        },
+        "effectivePriceGwei": {
+            "p50": round(median(eff_prices), 3) if eff_prices else 0.0,
+            "p95": round(pct(eff_prices, 0.95), 3) if eff_prices else 0.0,
+            "min": round(min(eff_prices), 3) if eff_prices else 0.0,
+            "max": round(max(eff_prices), 3) if eff_prices else 0.0,
+            "count": len(eff_prices),
+        },
+        "tipGweiApprox": {
+            "p50": round(median(tips), 3) if tips else 0.0,
+            "p95": round(pct(tips, 0.95), 3) if tips else 0.0,
+            "min": round(min(tips), 3) if tips else 0.0,
+            "max": round(max(tips), 3) if tips else 0.0,
+            "count": len(tips),
+            "countZero": zero_tip_count,
+        },
+    }
+
+
+def parse_args() -> argparse.Namespace:
+    ap = argparse.ArgumentParser(
+        description=(
+            "Profile recent gas: base fee, effective price, "
+            "and priority tip percentiles."
+        ),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    ap.add_argument(
+        "--rpc",
+        default=DEFAULT_RPC,
+        help="RPC URL (default from RPC_URL env).",
+    )
+    ap.add_argument(
+        "-b",
+        "--blocks",
+        type=int,
+        default=DEFAULT_BLOCKS,
+        help="How many recent blocks to scan.",
+    )
+    ap.add_argument(
+        "-s",
+        "--step",
+        type=int,
+        default=DEFAULT_STEP,
+        help="Sample every Nth block for speed.",
+    )
+    ap.add_argument(
+        "--timeout",
+        type=int,
+        default=DEFAULT_TIMEOUT,
+        help="HTTP RPC timeout in seconds.",
+    )
+    ap.add_argument(
+        "--json",
+        action="store_true",
+        help="Output JSON instead of human-readable text.",
+    )
+    ap.add_argument(
+        "--head",
+        type=int,
+        help="Use this block number as the head instead of the latest.",
+    )
+    ap.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
+    return ap.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+
+    # High-level run info → stderr
+    print(
+        f"📅 Fee profile run started at UTC: "
+        f"{time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())}",
+        file=sys.stderr,
+    )
+    print(f"⚙️ Using RPC endpoint: {args.rpc}", file=sys.stderr)
+
+    if args.blocks <= 0 or args.step <= 0:
+        print("❌ --blocks and --step must be > 0", file=sys.stderr)
+        return 1
+
+    # Hard guardrail to avoid accidental abuse
+    if args.blocks > 100_000:
         print(
-            f"{icon}{tx_hash} | {status_str} | "
-            f"{block_number if block_number is not None else '-'} | "
-            f"{block_time_str} | "
-            f"{confirmations if confirmations is not None else '-'} | "
-            f"{fee_eth_str} | "
-            f"{gas_used if gas_used is not None else '-'} | "
-            f"{gas_price_gwei_str}"
+            "❌ --blocks is extremely large (> 100000); refusing to run.",
+            file=sys.stderr,
+        )
+        return 1
+
+    # Soft cap to keep scans cheap
+    if args.blocks > 5_000:
+        print(
+            "⚠️  Limiting --blocks to 5000 to avoid excessive RPC load.",
+            file=sys.stderr,
+        )
+        args.blocks = 5_000
+
+    w3 = connect(args.rpc, timeout=args.timeout)
+    result = analyze(w3, args.blocks, args.step, args.head)
+
+    if result["sampledBlocks"] == 0:
+        print(
+            "⚠️  No blocks were sampled. Check --blocks/--step and head range.",
+            file=sys.stderr,
         )
 
-        # Check fee threshold if configured
-        if args.max_fee_eth is not None and total_fee_wei is not None:
-            fee_eth_float = float(Web3.from_wei(total_fee_wei, "ether"))
-            if fee_eth_float > args.max_fee_eth:
-                any_fee_violation = True
-                print(
-                    f"{warn_emoji}Fee {fee_eth_float:.6f} ETH exceeds threshold "
-                    f"{args.max_fee_eth:.6f} ETH for tx {tx_hash}",
-                    file=sys.stderr,
-                )
+    if args.json:
+        payload = {
+            "mode": "fee_profile",
+            "network": result["network"],
+            "chainId": result["chainId"],
+            "generatedAtUtc": time.strftime(
+                "%Y-%m-%d %H:%M:%S", time.gmtime()
+            ),
+            "data": result,
+        }
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return 0
 
-    elapsed = time.time() - start_time
-    if elapsed < 1:
-        elapsed_str = f"{elapsed * 1000:.0f}ms"
-    else:
-        elapsed_str = f"{elapsed:.2f}s"
+    # Human-readable summary
+    bf = result["baseFeeGwei"]
+    ep = result["effectivePriceGwei"]
+    tp = result["tipGweiApprox"]
 
-    print(f"\nProcessed {len(hashes_raw)} transaction(s) in {elapsed_str}.")
+    print(
+        f"🌐 {result['network']} (chainId {result['chainId']})  head={result['head']}"
+    )
+    print(
+        f"📦 Scanned ~{result['sampledBlocks']} blocks over last "
+        f"{result['blockSpan']} (step={result['step']}) "
+        f"in {result['timingSec']}s"
+    )
+    print(f"🕒 Average block time: {result['avgBlockTimeSec']} seconds")
+    print(
+        f"⛽ Base Fee (Gwei):   "
+        f"p50={bf['p50']}  p95={bf['p95']}  "
+        f"min={bf['min']}  max={bf['max']}"
+    )
+    print(
+        f"💵 Effective Price:   "
+        f"p50={ep['p50']}  p95={ep['p95']}  "
+        f"min={ep['min']}  max={ep['max']}  (n={ep['count']})"
+    )
+    print(
+        f"🎁 Priority Tip ~:    "
+        f"p50={tp['p50']}  p95={tp['p95']}  "
+        f"min={tp['min']}  max={tp['max']}  "
+        f"(n={tp['count']}, zero={tp.get('countZero', 0)})"
+    )
 
-    if any_error:
-        print("One or more errors occurred while processing transactions.", file=sys.stderr)
-    if any_fee_violation:
-        print("One or more transactions exceeded the configured fee threshold.", file=sys.stderr)
+    if tp["count"] > 0:
+        zero_tip_pct = tp.get("countZero", 0) / tp["count"] * 100.0
+        print(f"🎯 Zero-tip share: {zero_tip_pct:.1f}% of sampled txs")
 
-    # Exit codes:
-    # - 0 if everything was fine and no fee violations
-    # - 1 if any errors or fee violations occurred
-    if any_error or any_fee_violation:
-        return 1
+    print(
+        "ℹ️  Tip for EIP-1559 uses tx.maxPriorityFeePerGas; "
+        "legacy approximates tip = gasPrice - baseFee."
+    )
+
+    print(
+        f"\n🕒 Completed at: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())} UTC"
+    )
     return 0
-
-# Example usage:
-#   python check_fees.py --rpc https://mainnet.infura.io/v3/KEY --tx 0x1234... --tx 0xabcd...
-#   python check_fees.py --rpc https://... --file tx_hashes.txt --min-confirmations 3
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        print("\nInterrupted by user.", file=sys.stderr)
+        sys.exit(1)
