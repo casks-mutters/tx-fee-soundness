@@ -322,6 +322,11 @@ def main() -> int:
 
     print(f"\nProcessed {len(hashes_raw)} transaction(s) in {elapsed_str}.")
 
+    if any_error:
+        print("One or more errors occurred while processing transactions.", file=sys.stderr)
+    if any_fee_violation:
+        print("One or more transactions exceeded the configured fee threshold.", file=sys.stderr)
+
     # Exit codes:
     # - 0 if everything was fine and no fee violations
     # - 1 if any errors or fee violations occurred
@@ -332,6 +337,7 @@ def main() -> int:
 # Example usage:
 #   python check_fees.py --rpc https://mainnet.infura.io/v3/KEY --tx 0x1234... --tx 0xabcd...
 #   python check_fees.py --rpc https://... --file tx_hashes.txt --min-confirmations 3
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
