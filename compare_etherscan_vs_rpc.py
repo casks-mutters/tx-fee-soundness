@@ -78,6 +78,9 @@ def main():
         print("⚠️  Discrepancies detected:", diffs)
     else:
         print("✅  RPC and Etherscan values match.")
-
+if args.ignore_gas_discrepancies:
+    gas_diff_tolerance = 0.01  # Adjust as needed
+    if abs(rpc["gasPrice"] - es["gasPrice"]) < gas_diff_tolerance:
+        continue
 if __name__ == "__main__":
     main()
