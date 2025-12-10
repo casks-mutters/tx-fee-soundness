@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 import os
 import sys
+import logging
 import time
 import requests
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Config: set your RPC_URL and ETHERSCAN_API_KEY env vars
 RPC_URL = os.getenv("RPC_URL", "https://mainnet.infura.io/v3/YOUR_PROJECT_ID")
