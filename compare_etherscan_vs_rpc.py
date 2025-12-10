@@ -57,6 +57,7 @@ def main():
         sys.exit(1)
     tx_hash = sys.argv[1]
     chain = sys.argv[2] if len(sys.argv) >= 3 else "mainnet"
+parser = argparse.ArgumentParser(description="Compare transaction details between RPC and Etherscan")
 
     print("Fetching via RPC:", RPC_URL)
     rpc = fetch_via_rpc(tx_hash)
