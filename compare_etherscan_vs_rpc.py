@@ -27,11 +27,11 @@ def fetch_via_rpc(tx_hash):
 def fetch_via_etherscan(tx_hash, chain="mainnet"):
     if not ETHERSCAN_API_KEY:
         raise RuntimeError("Set ETHERSCAN_API_KEY env variable to use Etherscan API")
-    base = {
-        "mainnet": "https://api.etherscan.io/api",
-        "goerli": "https://api-goerli.etherscan.io/api",
-        "sepolia": "https://api-goerli.etherscan.io/api",  # replace if sepolia has own endpoint
-    }.get(chain, "https://api.etherscan.io/api")
+  base = {
+    "mainnet": "https://api.etherscan.io/api",
+    "goerli": "https://api-goerli.etherscan.io/api",
+    "sepolia": "https://api-sepolia.etherscan.io/api",
+}.get(chain, "https://api.etherscan.io/api")
 
     params = {
         "module": "proxy",
