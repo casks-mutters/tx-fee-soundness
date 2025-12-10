@@ -42,7 +42,7 @@ def fetch_via_etherscan(tx_hash, chain="mainnet"):
     resp = requests.get(base, params=params)
     data = resp.json()
     if data.get("result") is None:
-        raise RuntimeError("Etherscan API error: %s" % data)
+    raise RuntimeError(f"Etherscan API error for {tx_hash}: {data.get('message', 'Unknown error')}")
     res = data["result"]
     return {
         "status": int(res.get("status", "0x0"), 16),
