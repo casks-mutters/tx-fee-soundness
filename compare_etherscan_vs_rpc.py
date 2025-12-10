@@ -52,6 +52,10 @@ def fetch_via_etherscan(tx_hash, chain="mainnet"):
     }
 
 def main():
+    if not RPC_URL:
+    raise RuntimeError("Set RPC_URL environment variable")
+if not ETHERSCAN_API_KEY:
+    raise RuntimeError("Set ETHERSCAN_API_KEY environment variable")
     if len(sys.argv) < 2:
         print("Usage: python compare_etherscan_vs_rpc.py <tx_hash> [chain]")
         sys.exit(1)
