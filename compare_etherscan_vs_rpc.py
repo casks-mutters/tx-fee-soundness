@@ -57,6 +57,8 @@ def main():
         sys.exit(1)
     tx_hash = sys.argv[1]
     chain = sys.argv[2] if len(sys.argv) >= 3 else "mainnet"
+if args.quiet:
+    logging.disable(logging.INFO)
 
     print("Fetching via RPC:", RPC_URL)
     rpc = fetch_via_rpc(tx_hash)
