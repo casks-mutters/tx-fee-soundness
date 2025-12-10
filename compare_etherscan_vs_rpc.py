@@ -5,6 +5,7 @@ import time
 import requests
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
+import json
 
 # Config: set your RPC_URL and ETHERSCAN_API_KEY env vars
 RPC_URL = os.getenv("RPC_URL", "https://mainnet.infura.io/v3/YOUR_PROJECT_ID")
@@ -52,6 +53,11 @@ def fetch_via_etherscan(tx_hash, chain="mainnet"):
     }
 
 def main():
+   
+if args.json:
+    print(json.dumps({"rpc": rpc, "etherscan": es}, indent=4))
+    sys.exit(0)
+
     if len(sys.argv) < 2:
         print("Usage: python compare_etherscan_vs_rpc.py <tx_hash> [chain]")
         sys.exit(1)
